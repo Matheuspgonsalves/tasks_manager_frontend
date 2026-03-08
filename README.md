@@ -42,10 +42,10 @@ Este projeto consome a API RESTful do sistema de gerenciamento de usuários e ta
 Para conectar com o backend, configure a URL da API no arquivo `.env`:
 
 ```env
-VITE_API_URL="http://localhost:3000"
+VITE_API_URL="/api"
 ```
 
-> Ajuste a porta conforme a sua API backend em execução.
+> Em desenvolvimento, `/api` usa proxy do Vite para `http://localhost:3000`.
 
 ---
 
