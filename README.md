@@ -39,13 +39,26 @@ Este projeto consome a API RESTful do sistema de gerenciamento de usuários e ta
 
 ## ⚙️ Configuração da API
 
-Para conectar com o backend, configure a URL da API no arquivo `.env`:
+Para conectar com o backend em produção, configure a URL da API no arquivo `.env`:
 
 ```env
-VITE_API_URL="/api"
+VITE_API_URL="https://your-backend-domain.example.com"
 ```
 
+> Se `VITE_API_URL` não estiver definida, o frontend usa `/api` por padrão.
 > Em desenvolvimento, `/api` usa proxy do Vite para `http://localhost:3000`.
+> Na Vercel, defina `VITE_API_URL` nas Environment Variables com a URL pública do backend.
+
+---
+
+## ▲ Deploy na Vercel
+
+- O projeto já inclui `vercel.json` com rewrite SPA para que rotas como `/dashboard` e `/create-task` carreguem o `index.html`.
+- O projeto fixa Node 20 via `package.json` e `.nvmrc`, compatível com o Vite 7.
+- Na Vercel, configure a variável:
+  ```env
+  VITE_API_URL=https://your-backend-domain.example.com
+  ```
 
 ---
 
