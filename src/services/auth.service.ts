@@ -16,7 +16,7 @@ export type LoginResponse = {
 }
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
-  const response = await fetch(apiEndpoints.auth, {
+  const response = await fetch(apiEndpoints.authLogin, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

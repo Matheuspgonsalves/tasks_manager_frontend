@@ -7,7 +7,7 @@ export type RegisterPayload = {
 }
 
 export async function registerUser(payload: RegisterPayload): Promise<void> {
-  const response = await fetch(apiEndpoints.users, {
+  const response = await fetch(apiEndpoints.authRegister, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
