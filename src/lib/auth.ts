@@ -1,4 +1,4 @@
-type AuthUser = {
+export type AuthUser = {
   id: string
   email: string
   role: string
@@ -14,4 +14,21 @@ export function saveAuthSession(token: string, user: AuthUser): void {
 
 export function isAuthenticated(): boolean {
   return Boolean(sessionStorage.getItem(TOKEN_KEY))
+}
+
+export function getAuthToken(): string | null {
+  return sessionStorage.getItem(TOKEN_KEY)
+}
+
+export function getAuthUser(): AuthUser | null {
+  const rawUser = sessionStorage.getItem(USER_KEY)
+  if (!rawUser) {
+    return null
+  }
+
+  try {
+    return JSON.parse(rawUser) as AuthUser
+  } catch {
+    return null
+  }
 }

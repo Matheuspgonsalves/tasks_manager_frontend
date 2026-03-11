@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { isAuthenticated } from './lib/auth'
+import { CreateTaskPage } from './pages/CreateTaskPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 
@@ -18,10 +19,15 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (pathname === '/dashboard' && !isAuthenticated()) {
+    const privateRoutes = ['/dashboard', '/create-task']
+    if (privateRoutes.includes(pathname) && !isAuthenticated()) {
       navigate('/')
     }
   }, [pathname])
+
+  if (pathname === '/create-task' && isAuthenticated()) {
+    return <CreateTaskPage />
+  }
 
   if (pathname === '/dashboard' && isAuthenticated()) {
     return <DashboardPage />
