@@ -31,22 +31,22 @@ export function LoginForm({
       w="full"
       maxW="420px"
       rounded="2xl"
-      bg="#FFFFFF"
+      bg="var(--surface)"
       p={{ base: 6, md: 8 }}
       borderWidth="1px"
-      borderColor="#E2E8F0"
-      boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)"
+      borderColor="var(--border)"
+      boxShadow="var(--card-shadow)"
     >
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
-          <Heading size="xl" textAlign="center" color="#1E293B">
+          <Heading size="xl" textAlign="center" color="var(--text-secondary)">
             Sign in to your account
           </Heading>
-          <Text color="#64748B" textAlign="center">
+          <Text color="var(--muted-text)" textAlign="center">
             Enter your credentials to access the system
           </Text>
 
-          <label className="text-sm font-medium text-slate-700" htmlFor="email">
+          <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="email">
             Email
           </label>
           <Input
@@ -55,12 +55,13 @@ export function LoginForm({
             value={values.email}
             onChange={(event) => onFieldChange('email', event.target.value)}
             placeholder="you@email.com"
-            borderColor="#CBD5E1"
-            color="#1E293B"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
           />
           {errors.email && <Text mt={-2} color="red.600" fontSize="sm">{errors.email}</Text>}
 
-          <label className="text-sm font-medium text-slate-700" htmlFor="password">
+          <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="password">
             Password
           </label>
           <Input
@@ -69,8 +70,9 @@ export function LoginForm({
             value={values.password}
             onChange={(event) => onFieldChange('password', event.target.value)}
             placeholder="Your password"
-            borderColor="#CBD5E1"
-            color="#1E293B"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
           />
           {errors.password && <Text mt={-2} color="red.600" fontSize="sm">{errors.password}</Text>}
 
@@ -79,11 +81,11 @@ export function LoginForm({
               rounded="md"
               px={3}
               py={2}
-              bg={status === 'success' ? 'green.50' : status === 'info' ? 'blue.50' : 'red.50'}
+              bg={status === 'success' ? 'var(--success-bg)' : status === 'info' ? 'var(--accent-soft)' : 'var(--danger-bg)'}
               borderWidth="1px"
-              borderColor={status === 'success' ? 'green.200' : status === 'info' ? 'blue.200' : 'red.200'}
+              borderColor={status === 'success' ? 'var(--success-border)' : status === 'info' ? 'var(--accent-border)' : 'var(--danger-border)'}
             >
-              <Text color={status === 'success' ? 'green.700' : status === 'info' ? 'blue.700' : 'red.700'}>
+              <Text color={status === 'success' ? 'var(--success-text)' : status === 'info' ? 'var(--accent-strong)' : 'var(--danger-text)'}>
                 {message}
               </Text>
             </Box>
@@ -91,9 +93,9 @@ export function LoginForm({
 
           <Button
             type="submit"
-            bg="#5C7CFA"
+            bg="var(--accent)"
             color="white"
-            _hover={{ bg: '#4F6EF7' }}
+            _hover={{ bg: 'var(--accent-strong)' }}
             loading={isSubmitting}
             loadingText="Signing in"
             disabled={isSubmitting}

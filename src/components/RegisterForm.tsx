@@ -27,17 +27,17 @@ export function RegisterForm({
   }
 
   return (
-    <Box w="full" maxW="420px" rounded="xl" bg="white" p={{ base: 6, md: 8 }} shadow="lg" borderWidth="1px">
+    <Box w="full" maxW="420px" rounded="2xl" bg="var(--surface)" p={{ base: 6, md: 8 }} boxShadow="var(--card-shadow)" borderWidth="1px" borderColor="var(--border)">
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
-          <Heading size="xl" textAlign="center">
+          <Heading size="xl" textAlign="center" color="var(--text-secondary)">
             Create your account
           </Heading>
-          <Text color="gray.500" textAlign="center">
+          <Text color="var(--muted-text)" textAlign="center">
             Fill in your details to register
           </Text>
 
-          <label className="text-sm font-medium text-slate-700" htmlFor="name">
+          <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="name">
             Name
           </label>
           <Input
@@ -45,10 +45,13 @@ export function RegisterForm({
             value={values.name}
             onChange={(event) => onFieldChange('name', event.target.value)}
             placeholder="John Doe"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
           />
           {errors.name && <Text mt={-2} color="red.600" fontSize="sm">{errors.name}</Text>}
 
-          <label className="text-sm font-medium text-slate-700" htmlFor="email">
+          <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="email">
             Email
           </label>
           <Input
@@ -57,10 +60,13 @@ export function RegisterForm({
             value={values.email}
             onChange={(event) => onFieldChange('email', event.target.value)}
             placeholder="john@email.com"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
           />
           {errors.email && <Text mt={-2} color="red.600" fontSize="sm">{errors.email}</Text>}
 
-          <label className="text-sm font-medium text-slate-700" htmlFor="password">
+          <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="password">
             Password
           </label>
           <Input
@@ -69,6 +75,9 @@ export function RegisterForm({
             value={values.password}
             onChange={(event) => onFieldChange('password', event.target.value)}
             placeholder="Enter your password"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
           />
           {errors.password && <Text mt={-2} color="red.600" fontSize="sm">{errors.password}</Text>}
 
@@ -77,15 +86,15 @@ export function RegisterForm({
               rounded="md"
               px={3}
               py={2}
-              bg={status === 'success' ? 'green.50' : 'red.50'}
+              bg={status === 'success' ? 'var(--success-bg)' : 'var(--danger-bg)'}
               borderWidth="1px"
-              borderColor={status === 'success' ? 'green.200' : 'red.200'}
+              borderColor={status === 'success' ? 'var(--success-border)' : 'var(--danger-border)'}
             >
-              <Text color={status === 'success' ? 'green.700' : 'red.700'}>{message}</Text>
+              <Text color={status === 'success' ? 'var(--success-text)' : 'var(--danger-text)'}>{message}</Text>
             </Box>
           )}
 
-          <Button type="submit" bg="blue.600" color="white" _hover={{ bg: 'blue.700' }} disabled={isSubmitting}>
+          <Button type="submit" bg="var(--accent)" color="white" _hover={{ bg: 'var(--accent-strong)' }} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Register'}
           </Button>
         </Stack>

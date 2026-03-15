@@ -20,12 +20,12 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
           key={card.label}
           p={5}
           borderRadius="2xl"
-          bg="#FFFFFF"
+          bg="var(--surface)"
           borderWidth="1px"
-          borderColor="#E2E8F0"
-          boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)"
+          borderColor="var(--border)"
+          boxShadow="var(--card-shadow)"
         >
-          <Text color="#64748B" fontSize="xs" textTransform="uppercase" letterSpacing="0.16em" fontWeight="700">
+          <Text color="var(--muted-text)" fontSize="xs" textTransform="uppercase" letterSpacing="0.16em" fontWeight="700">
             {card.label}
           </Text>
           <Text color={card.tone} mt={2} fontSize="3xl" fontWeight="900">

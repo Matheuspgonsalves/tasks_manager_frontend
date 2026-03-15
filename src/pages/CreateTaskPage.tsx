@@ -7,7 +7,7 @@ export function CreateTaskPage() {
   const { values, errors, isSubmitting, message, status, updateField, submit } = useCreateTask()
 
   return (
-    <Box as="main" minH="100vh" bg="#F8FAFC">
+    <Box as="main" minH="100vh" bg="var(--app-bg)">
       <DashboardHeader active="create-task" />
       <Box pt={{ base: 10, md: 14 }} pb={16}>
         <Container maxW="4xl" px={{ base: 4, md: 8 }}>

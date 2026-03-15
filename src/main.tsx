@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import './index.css'
 import App from './App'
+import { ThemeProvider } from './lib/theme'
 
 const rootElement = document.getElementById('root')
 
@@ -13,7 +14,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ChakraProvider value={defaultSystem}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </ChakraProvider>
   </StrictMode>,
 )

@@ -65,21 +65,21 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
   }
 
   return (
-    <Box bg="#FFFFFF" borderRadius="2xl" borderWidth="1px" borderColor="#E2E8F0" boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)" overflow="hidden">
-      <Box px={5} py={4} borderBottomWidth="1px" borderColor="#E2E8F0">
-        <Text color="#1E293B" fontWeight="700" fontSize="lg">
+    <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" overflow="hidden">
+      <Box px={5} py={4} borderBottomWidth="1px" borderColor="var(--border)">
+        <Text color="var(--text-secondary)" fontWeight="700" fontSize="lg">
           Your tasks
         </Text>
       </Box>
 
       {filteredTasks.length === 0 ? (
         <Box p={8}>
-          <Text color="#64748B" textAlign="center">
+          <Text color="var(--muted-text)" textAlign="center">
             {tasks.length === 0 ? 'No tasks found for this user.' : 'No tasks match the selected filter.'}
           </Text>
         </Box>
       ) : (
-        <Stack separator={<Separator borderColor="#E2E8F0" />} p={5} gap={4}>
+        <Stack separator={<Separator borderColor="var(--border)" />} p={5} gap={4}>
           {filteredTasks.map((task) => {
             const isEditing = editing?.taskId === task.id
             const isBusy = busyTaskId === task.id || isClearingCompleted
@@ -91,18 +91,18 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                     <Input
                       value={editing.title}
                       onChange={(event) => setEditing((current) => (current ? { ...current, title: event.target.value } : null))}
-                      bg="#FFFFFF"
-                      borderColor="#CBD5E1"
-                      color="#1E293B"
+                      bg="var(--surface)"
+                      borderColor="var(--border-strong)"
+                      color="var(--text-secondary)"
                     />
                     <Textarea
                       value={editing.description}
                       onChange={(event) =>
                         setEditing((current) => (current ? { ...current, description: event.target.value } : null))
                       }
-                      bg="#FFFFFF"
-                      borderColor="#CBD5E1"
-                      color="#1E293B"
+                      bg="var(--surface)"
+                      borderColor="var(--border-strong)"
+                      color="var(--text-secondary)"
                     />
                     <select
                       value={editing.status}
@@ -110,9 +110,9 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                         setEditing((current) => (current ? { ...current, status: event.target.value as TaskStatus } : null))
                       }
                       style={{
-                        background: '#ffffff',
-                        color: '#1e293b',
-                        border: '1px solid #CBD5E1',
+                        background: 'var(--surface)',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid var(--border-strong)',
                         borderRadius: 8,
                         padding: '10px 12px',
                       }}
@@ -121,7 +121,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                       <option value="done">Done</option>
                     </select>
                     <HStack justify="flex-end">
-                      <Button size="sm" variant="ghost" color="#64748B" onClick={() => setEditing(null)}>
+                      <Button size="sm" variant="ghost" color="var(--muted-text)" onClick={() => setEditing(null)}>
                         Cancel
                       </Button>
                       <Button size="sm" colorPalette="blue" onClick={saveEdit} loading={isBusy}>
@@ -132,14 +132,14 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                 ) : (
                   <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3}>
                     <Box>
-                      <Text fontSize="lg" fontWeight="700" color="#1E293B">
+                      <Text fontSize="lg" fontWeight="700" color="var(--text-secondary)">
                         {task.title}
                       </Text>
-                      <Text mt={1} color="#64748B">
+                      <Text mt={1} color="var(--muted-text)">
                         {task.description}
                       </Text>
                       {task.dueDate && (
-                        <Text mt={2} fontSize="sm" color="#94A3B8">
+                        <Text mt={2} fontSize="sm" color="var(--soft-text)">
                           Due: {task.dueDate}
                         </Text>
                       )}
@@ -151,7 +151,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                       <Button
                         size="sm"
                         variant="ghost"
-                        color="#64748B"
+                        color="var(--muted-text)"
                         onClick={() =>
                           setEditing({
                             taskId: task.id,
@@ -166,7 +166,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                       <Button
                         size="sm"
                         variant="ghost"
-                        color="#DC2626"
+                        color="var(--danger-text)"
                         onClick={() => onDeleteTask(task.id)}
                         loading={isBusy}
                       >
@@ -183,7 +183,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
 
       <Flex
         borderTopWidth="1px"
-        borderColor="#E2E8F0"
+        borderColor="var(--border)"
         px={5}
         py={4}
         align={{ base: 'flex-start', md: 'center' }}
@@ -191,18 +191,18 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
         gap={4}
         direction={{ base: 'column', md: 'row' }}
       >
-        <Text color="#94A3B8" fontSize="sm">
+        <Text color="var(--soft-text)" fontSize="sm">
           {filteredTasks.length} {filteredTasks.length === 1 ? 'item' : 'items'}
         </Text>
         <HStack gap={2}>
-          <Button size="sm" variant={filter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={filter === 'all' ? undefined : '#64748B'} onClick={() => setFilter('all')}>
+          <Button size="sm" variant={filter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={filter === 'all' ? undefined : 'var(--muted-text)'} onClick={() => setFilter('all')}>
             All
           </Button>
           <Button
             size="sm"
             variant={filter === 'active' ? 'subtle' : 'ghost'}
             colorPalette="blue"
-            color={filter === 'active' ? undefined : '#64748B'}
+            color={filter === 'active' ? undefined : 'var(--muted-text)'}
             onClick={() => setFilter('active')}
           >
             Active
@@ -211,7 +211,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
             size="sm"
             variant={filter === 'completed' ? 'subtle' : 'ghost'}
             colorPalette="blue"
-            color={filter === 'completed' ? undefined : '#64748B'}
+            color={filter === 'completed' ? undefined : 'var(--muted-text)'}
             onClick={() => setFilter('completed')}
           >
             Completed
@@ -220,7 +220,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
         <Button
           size="sm"
           variant="ghost"
-          color="#64748B"
+          color="var(--muted-text)"
           onClick={clearCompleted}
           disabled={completedTasks.length === 0 || isClearingCompleted}
           loading={isClearingCompleted}

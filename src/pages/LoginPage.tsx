@@ -1,4 +1,5 @@
 import { LoginForm } from '../components/LoginForm'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { useLogin } from '../hooks/useLogin'
 
 type LoginPageProps = {
@@ -15,7 +16,10 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <main className="relative flex min-h-screen items-center justify-center px-4" style={{ background: 'var(--app-bg)' }}>
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <LoginForm
         values={values}
         errors={errors}

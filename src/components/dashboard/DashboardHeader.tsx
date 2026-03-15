@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, HStack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { ReactElement } from 'react'
+import { ThemeToggle } from '../ThemeToggle'
 import { clearAuthSession } from '../../lib/auth'
 import { logout } from '../../services/auth.service'
 
@@ -76,17 +77,17 @@ function NavButton({ label, icon, isActive, onClick }: NavItem) {
       rounded="xl"
       fontWeight="600"
       fontSize="sm"
-      color={isActive ? '#5C7CFA' : '#64748B'}
-      bg={isActive ? '#EEF2FF' : 'transparent'}
+      color={isActive ? 'var(--accent)' : 'var(--muted-text)'}
+      bg={isActive ? 'var(--accent-soft)' : 'transparent'}
       borderWidth="1px"
-      borderColor={isActive ? '#E0E7FF' : 'transparent'}
+      borderColor={isActive ? 'var(--accent-border)' : 'transparent'}
       transition="all 0.2s ease"
       _hover={{
-        bg: isActive ? '#E8EDFF' : '#F8FAFC',
-        color: '#4F6EF7',
+        bg: isActive ? 'var(--accent-soft)' : 'var(--surface-hover)',
+        color: 'var(--accent-strong)',
       }}
       _active={{
-        bg: isActive ? '#E0E7FF' : '#EEF2FF',
+        bg: isActive ? 'var(--accent-soft)' : 'var(--surface-active)',
       }}
     >
       <HStack gap={2} align="center">
@@ -144,9 +145,9 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
       top={0}
       zIndex={30}
       w="full"
-      bg="#FFFFFF"
+      bg="var(--surface)"
       borderBottomWidth="1px"
-      borderColor="#E2E8F0"
+      borderColor="var(--border)"
       boxShadow="0 1px 0 rgba(148, 163, 184, 0.08)"
     >
       <Container maxW="7xl" px={{ base: 4, md: 8 }}>
@@ -168,7 +169,7 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
             flex="1"
           >
             <HStack gap={3} flexShrink={0} align="center">
-              <Box color="#5C7CFA">
+              <Box color="var(--accent)">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
                   <path d="M21 12a9 9 0 0 0-15.5-6.36" />
                   <path d="M3 4v5h5" />
@@ -176,7 +177,7 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
                   <path d="M21 20v-5h-5" />
                 </svg>
               </Box>
-              <Text color="#1E293B" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.03em">
+              <Text color="var(--text-secondary)" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.03em">
                 Dolistify
               </Text>
             </HStack>
@@ -205,32 +206,33 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
             </HStack>
           </Flex>
 
-          <Button
-            alignSelf={{ base: 'flex-end', lg: 'center' }}
-            onClick={handleLogout}
-            loading={isLoggingOut}
-            variant="ghost"
-            h="42px"
-            px={4}
-            rounded="xl"
-            fontWeight="600"
-            fontSize="sm"
-            color="#64748B"
-            transition="all 0.2s ease"
-            flexShrink={0}
-            _hover={{
-              bg: '#F8FAFC',
-              color: '#4F6EF7',
-            }}
-            _active={{
-              bg: '#EEF2FF',
-            }}
-          >
-            <HStack gap={2}>
-              <LogoutIcon />
-              <Text>Logout</Text>
-            </HStack>
-          </Button>
+          <HStack alignSelf={{ base: 'flex-end', lg: 'center' }} gap={3} flexShrink={0}>
+            <ThemeToggle compact />
+            <Button
+              onClick={handleLogout}
+              loading={isLoggingOut}
+              variant="ghost"
+              h="42px"
+              px={4}
+              rounded="xl"
+              fontWeight="600"
+              fontSize="sm"
+              color="var(--muted-text)"
+              transition="all 0.2s ease"
+              _hover={{
+                bg: 'var(--surface-hover)',
+                color: 'var(--accent-strong)',
+              }}
+              _active={{
+                bg: 'var(--surface-active)',
+              }}
+            >
+              <HStack gap={2}>
+                <LogoutIcon />
+                <Text>Logout</Text>
+              </HStack>
+            </Button>
+          </HStack>
         </Flex>
       </Container>
     </Box>
