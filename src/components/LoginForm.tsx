@@ -6,7 +6,7 @@ type LoginFormProps = {
   values: LoginFormValues
   errors: LoginFormErrors
   isSubmitting: boolean
-  status: 'success' | 'error' | null
+  status: 'success' | 'error' | 'info' | null
   message: string
   onFieldChange: (field: keyof LoginFormValues, value: string) => void
   onSubmit: () => Promise<void>
@@ -66,15 +66,25 @@ export function LoginForm({
               rounded="md"
               px={3}
               py={2}
-              bg={status === 'success' ? 'green.50' : 'red.50'}
+              bg={status === 'success' ? 'green.50' : status === 'info' ? 'blue.50' : 'red.50'}
               borderWidth="1px"
-              borderColor={status === 'success' ? 'green.200' : 'red.200'}
+              borderColor={status === 'success' ? 'green.200' : status === 'info' ? 'blue.200' : 'red.200'}
             >
-              <Text color={status === 'success' ? 'green.700' : 'red.700'}>{message}</Text>
+              <Text color={status === 'success' ? 'green.700' : status === 'info' ? 'blue.700' : 'red.700'}>
+                {message}
+              </Text>
             </Box>
           )}
 
-          <Button type="submit" bg="blue.600" color="white" _hover={{ bg: 'blue.700' }} disabled={isSubmitting}>
+          <Button
+            type="submit"
+            bg="blue.600"
+            color="white"
+            _hover={{ bg: 'blue.700' }}
+            loading={isSubmitting}
+            loadingText="Signing in"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Submitting...' : 'Login'}
           </Button>
         </Stack>
