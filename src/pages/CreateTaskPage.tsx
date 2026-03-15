@@ -7,13 +7,9 @@ export function CreateTaskPage() {
   const { values, errors, isSubmitting, message, status, updateField, submit } = useCreateTask()
 
   return (
-    <Box as="main" minH="100vh" bg="#090d16">
+    <Box as="main" minH="100vh" bg="#F8FAFC">
       <DashboardHeader active="create-task" />
-      <Box
-        bgGradient="radial(circle at top right, rgba(168,85,247,0.2), transparent 45%), radial(circle at top left, rgba(34,211,238,0.14), transparent 50%), linear-gradient(180deg, #0b1020 0%, #0a0f1d 100%)"
-        pt={{ base: 10, md: 14 }}
-        pb={16}
-      >
+      <Box pt={{ base: 10, md: 14 }} pb={16}>
         <Container maxW="4xl" px={{ base: 4, md: 8 }}>
           <CreateTaskForm
             values={values}

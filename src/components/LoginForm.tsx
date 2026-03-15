@@ -27,13 +27,22 @@ export function LoginForm({
   }
 
   return (
-    <Box w="full" maxW="420px" rounded="xl" bg="white" p={{ base: 6, md: 8 }} shadow="lg" borderWidth="1px">
+    <Box
+      w="full"
+      maxW="420px"
+      rounded="2xl"
+      bg="#FFFFFF"
+      p={{ base: 6, md: 8 }}
+      borderWidth="1px"
+      borderColor="#E2E8F0"
+      boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)"
+    >
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
-          <Heading size="xl" textAlign="center">
+          <Heading size="xl" textAlign="center" color="#1E293B">
             Sign in to your account
           </Heading>
-          <Text color="gray.500" textAlign="center">
+          <Text color="#64748B" textAlign="center">
             Enter your credentials to access the system
           </Text>
 
@@ -46,6 +55,8 @@ export function LoginForm({
             value={values.email}
             onChange={(event) => onFieldChange('email', event.target.value)}
             placeholder="you@email.com"
+            borderColor="#CBD5E1"
+            color="#1E293B"
           />
           {errors.email && <Text mt={-2} color="red.600" fontSize="sm">{errors.email}</Text>}
 
@@ -58,6 +69,8 @@ export function LoginForm({
             value={values.password}
             onChange={(event) => onFieldChange('password', event.target.value)}
             placeholder="Your password"
+            borderColor="#CBD5E1"
+            color="#1E293B"
           />
           {errors.password && <Text mt={-2} color="red.600" fontSize="sm">{errors.password}</Text>}
 
@@ -78,9 +91,9 @@ export function LoginForm({
 
           <Button
             type="submit"
-            bg="blue.600"
+            bg="#5C7CFA"
             color="white"
-            _hover={{ bg: 'blue.700' }}
+            _hover={{ bg: '#4F6EF7' }}
             loading={isSubmitting}
             loadingText="Signing in"
             disabled={isSubmitting}

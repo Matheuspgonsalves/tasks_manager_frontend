@@ -14,6 +14,20 @@ export type LoginResponse = {
   }
 }
 
+export async function logout(): Promise<void> {
+  const response = await apiFetch(apiEndpoints.authLogout, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeoutMs: 8000,
+  })
+
+  if (!response.ok && response.status !== 401) {
+    throw new ApiResponseError(response.status)
+  }
+}
+
 function isLoginResponse(payload: unknown): payload is LoginResponse {
   if (!payload || typeof payload !== 'object') {
     return false

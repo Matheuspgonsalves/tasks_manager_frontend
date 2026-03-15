@@ -70,6 +70,7 @@ export async function apiFetch(input: string, init: ApiFetchOptions = {}) {
 
 export const apiEndpoints = {
   authLogin: `${API_BASE_URL}/auth/v1/login`,
+  authLogout: `${API_BASE_URL}/auth/v1/logout`,
   authRegister: `${API_BASE_URL}/auth/v1/register`,
   users: {
     byId: (id: string) => `${API_BASE_URL}/users/${id}`,

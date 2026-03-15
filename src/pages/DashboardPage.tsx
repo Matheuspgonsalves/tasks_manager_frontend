@@ -8,26 +8,22 @@ export function DashboardPage() {
   const { tasks, stats, isLoading, errorMessage, busyTaskId, handleDelete, handleUpdate } = useTasks()
 
   return (
-    <Box as="main" minH="100vh" bg="#090d16">
+    <Box as="main" minH="100vh" bg="#F8FAFC">
       <DashboardHeader active="dashboard" />
-      <Box
-        bgGradient="radial(circle at top right, rgba(168,85,247,0.2), transparent 45%), radial(circle at top left, rgba(34,211,238,0.14), transparent 50%), linear-gradient(180deg, #0b1020 0%, #0a0f1d 100%)"
-        pt={{ base: 8, md: 10 }}
-        pb={{ base: 36, md: 40 }}
-      >
+      <Box pt={{ base: 8, md: 10 }} pb={{ base: 10, md: 12 }}>
         <Container maxW="7xl" px={{ base: 4, md: 8 }}>
           <DashboardStats stats={stats} />
         </Container>
       </Box>
 
-      <Box mt={{ base: -22, md: -24 }} pb={16}>
+      <Box pb={16}>
         <Container maxW="7xl" px={{ base: 4, md: 8 }}>
           {errorMessage ? (
-            <Box bg="red.900" color="red.100" borderRadius="lg" p={4} borderWidth="1px" borderColor="red.500">
+            <Box bg="#FEF2F2" color="#B91C1C" borderRadius="xl" p={4} borderWidth="1px" borderColor="#FECACA">
               {errorMessage}
             </Box>
           ) : isLoading ? (
-            <Box bg="#111827" color="gray.300" borderRadius="2xl" p={8} borderWidth="1px" borderColor="whiteAlpha.200">
+            <Box bg="#FFFFFF" color="#64748B" borderRadius="2xl" p={8} borderWidth="1px" borderColor="#E2E8F0" boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)">
               Loading tasks...
             </Box>
           ) : (

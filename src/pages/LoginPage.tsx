@@ -15,7 +15,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-200 px-4">
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <LoginForm
         values={values}
         errors={errors}

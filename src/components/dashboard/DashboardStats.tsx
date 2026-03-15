@@ -7,10 +7,10 @@ type DashboardStatsProps = {
 
 export function DashboardStats({ stats }: DashboardStatsProps) {
   const cards = [
-    { label: 'Tasks done', value: stats.done, tone: 'cyan.300' },
-    { label: 'In progress', value: stats.inProgress, tone: 'orange.300' },
-    { label: 'Completed', value: stats.completed, tone: 'green.300' },
-    { label: 'Total tasks', value: stats.total, tone: 'purple.300' },
+    { label: 'Tasks done', value: stats.done, tone: '#4F6EF7' },
+    { label: 'In progress', value: stats.inProgress, tone: '#F59E0B' },
+    { label: 'Completed', value: stats.completed, tone: '#10B981' },
+    { label: 'Total tasks', value: stats.total, tone: '#334155' },
   ]
 
   return (
@@ -19,14 +19,13 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
         <Box
           key={card.label}
           p={5}
-          borderRadius="xl"
-          bg="whiteAlpha.100"
+          borderRadius="2xl"
+          bg="#FFFFFF"
           borderWidth="1px"
-          borderColor="whiteAlpha.200"
-          boxShadow="lg"
-          backdropFilter="blur(8px)"
+          borderColor="#E2E8F0"
+          boxShadow="0 18px 40px rgba(15, 23, 42, 0.06)"
         >
-          <Text color="whiteAlpha.700" fontSize="xs" textTransform="uppercase" letterSpacing="0.16em" fontWeight="700">
+          <Text color="#64748B" fontSize="xs" textTransform="uppercase" letterSpacing="0.16em" fontWeight="700">
             {card.label}
           </Text>
           <Text color={card.tone} mt={2} fontSize="3xl" fontWeight="900">
