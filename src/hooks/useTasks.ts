@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { getAuthUser } from '../lib/auth'
+import { clearAuthSession, getAuthUser } from '../lib/auth'
+import { UnauthorizedError } from '../lib/api'
 import { deleteTask, getTasksByUserId, updateTask } from '../services/tasks.service'
 import type { Task } from '../types/task'
+
+function navigate(path: string) {
+  window.history.pushState({}, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -27,7 +33,13 @@ export function useTasks() {
       })
 
       setTasks(sorted)
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        clearAuthSession()
+        navigate('/')
+        return
+      }
+
       setErrorMessage('Failed to load tasks.')
     } finally {
       setIsLoading(false)
@@ -56,7 +68,13 @@ export function useTasks() {
     try {
       await deleteTask(taskId)
       setTasks((current) => current.filter((task) => task.id !== taskId))
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        clearAuthSession()
+        navigate('/')
+        return
+      }
+
       setErrorMessage('Failed to delete task.')
     } finally {
       setBusyTaskId(null)
@@ -76,7 +94,13 @@ export function useTasks() {
         userId: authUser.id,
       })
       setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        clearAuthSession()
+        navigate('/')
+        return
+      }
+
       setErrorMessage('Failed to update task.')
     } finally {
       setBusyTaskId(null)

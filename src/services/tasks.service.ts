@@ -1,5 +1,4 @@
-import { getAuthToken } from '../lib/auth'
-import { apiEndpoints } from '../lib/api'
+import { UnauthorizedError, apiEndpoints, apiFetch } from '../lib/api'
 import type { Task, TaskStatus } from '../types/task'
 
 type TaskApiShape = {
@@ -83,18 +82,20 @@ function extractOne(payload: unknown): TaskApiShape {
 }
 
 function buildHeaders(): HeadersInit {
-  const token = getAuthToken()
   return {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
 }
 
 export async function getAllTasks(): Promise<Task[]> {
-  const response = await fetch(apiEndpoints.users.createTask, {
+  const response = await apiFetch(apiEndpoints.users.createTask, {
     method: 'GET',
     headers: buildHeaders(),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (!response.ok) {
     throw new Error('Failed to fetch tasks')
@@ -105,10 +106,14 @@ export async function getAllTasks(): Promise<Task[]> {
 }
 
 export async function getTasksByUserId(userId: string): Promise<Task[]> {
-  const response = await fetch(apiEndpoints.users.tasksByUserId(userId), {
+  const response = await apiFetch(apiEndpoints.users.tasksByUserId(userId), {
     method: 'GET',
     headers: buildHeaders(),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (response.status === 404) {
     return []
@@ -123,10 +128,14 @@ export async function getTasksByUserId(userId: string): Promise<Task[]> {
 }
 
 export async function getTaskById(taskId: string): Promise<Task> {
-  const response = await fetch(apiEndpoints.users.taskById(taskId), {
+  const response = await apiFetch(apiEndpoints.users.taskById(taskId), {
     method: 'GET',
     headers: buildHeaders(),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (!response.ok) {
     throw new Error('Failed to fetch task by id')
@@ -138,11 +147,15 @@ export async function getTaskById(taskId: string): Promise<Task> {
 }
 
 export async function createTask(payload: CreateTaskPayload): Promise<Task> {
-  const response = await fetch(apiEndpoints.users.createTask, {
+  const response = await apiFetch(apiEndpoints.users.createTask, {
     method: 'POST',
     headers: buildHeaders(),
     body: JSON.stringify(payload),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (!response.ok) {
     throw new Error('Failed to create task')
@@ -153,11 +166,15 @@ export async function createTask(payload: CreateTaskPayload): Promise<Task> {
 }
 
 export async function updateTask(taskId: string, payload: UpdateTaskPayload): Promise<Task> {
-  const response = await fetch(apiEndpoints.users.taskById(taskId), {
+  const response = await apiFetch(apiEndpoints.users.taskById(taskId), {
     method: 'PUT',
     headers: buildHeaders(),
     body: JSON.stringify(payload),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (!response.ok) {
     throw new Error('Failed to update task')
@@ -168,10 +185,14 @@ export async function updateTask(taskId: string, payload: UpdateTaskPayload): Pr
 }
 
 export async function deleteTask(taskId: string): Promise<void> {
-  const response = await fetch(apiEndpoints.users.deleteTaskById(taskId), {
+  const response = await apiFetch(apiEndpoints.users.deleteTaskById(taskId), {
     method: 'DELETE',
     headers: buildHeaders(),
   })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
 
   if (!response.ok) {
     throw new Error('Failed to delete task')

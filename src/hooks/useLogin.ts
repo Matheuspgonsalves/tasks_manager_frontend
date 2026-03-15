@@ -52,7 +52,7 @@ export function useLogin() {
         email: parsed.data.email.trim().toLowerCase(),
         password: parsed.data.password,
       })
-      saveAuthSession(data.newAccesToken, data.user)
+      saveAuthSession(data.user)
 
       setStatus('success')
       setMessage(data.message || 'Login successfully completed.')

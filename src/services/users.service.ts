@@ -1,4 +1,4 @@
-import { apiEndpoints } from '../lib/api'
+import { apiEndpoints, apiFetch } from '../lib/api'
 
 export type RegisterPayload = {
   name: string
@@ -7,7 +7,7 @@ export type RegisterPayload = {
 }
 
 export async function registerUser(payload: RegisterPayload): Promise<void> {
-  const response = await fetch(apiEndpoints.authRegister, {
+  const response = await apiFetch(apiEndpoints.authRegister, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -4,20 +4,14 @@ export type AuthUser = {
   role: string
 }
 
-const TOKEN_KEY = 'auth_token'
 const USER_KEY = 'auth_user'
 
-export function saveAuthSession(token: string, user: AuthUser): void {
-  sessionStorage.setItem(TOKEN_KEY, token)
+export function saveAuthSession(user: AuthUser): void {
   sessionStorage.setItem(USER_KEY, JSON.stringify(user))
 }
 
 export function isAuthenticated(): boolean {
-  return Boolean(sessionStorage.getItem(TOKEN_KEY))
-}
-
-export function getAuthToken(): string | null {
-  return sessionStorage.getItem(TOKEN_KEY)
+  return Boolean(getAuthUser())
 }
 
 export function getAuthUser(): AuthUser | null {
@@ -29,6 +23,11 @@ export function getAuthUser(): AuthUser | null {
   try {
     return JSON.parse(rawUser) as AuthUser
   } catch {
+    sessionStorage.removeItem(USER_KEY)
     return null
   }
+}
+
+export function clearAuthSession(): void {
+  sessionStorage.removeItem(USER_KEY)
 }

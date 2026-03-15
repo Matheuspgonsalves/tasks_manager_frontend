@@ -1,4 +1,4 @@
-import { apiEndpoints } from '../lib/api'
+import { apiEndpoints, apiFetch } from '../lib/api'
 
 export type LoginPayload = {
   email: string
@@ -12,11 +12,10 @@ export type LoginResponse = {
     email: string
     role: string
   }
-  newAccesToken: string
 }
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
-  const response = await fetch(apiEndpoints.authLogin, {
+  const response = await apiFetch(apiEndpoints.authLogin, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -1,8 +1,14 @@
 import { useState } from 'react'
-import { getAuthUser } from '../lib/auth'
+import { clearAuthSession, getAuthUser } from '../lib/auth'
+import { UnauthorizedError } from '../lib/api'
 import { taskRegisterSchema, taskSchema } from '../lib/task.schema'
 import type { TaskFormErrors, TaskFormValues } from '../lib/task.schema'
 import { createTask } from '../services/tasks.service'
+
+function navigate(path: string) {
+  window.history.pushState({}, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
 
 const initialValues: TaskFormValues = {
   title: '',
@@ -72,7 +78,15 @@ export function useCreateTask() {
       setMessage('Task created successfully.')
       setValues(initialValues)
       return true
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        clearAuthSession()
+        navigate('/')
+        setStatus('error')
+        setMessage('Your session expired. Please login again.')
+        return false
+      }
+
       setStatus('error')
       setMessage('Failed to create task.')
       return false
