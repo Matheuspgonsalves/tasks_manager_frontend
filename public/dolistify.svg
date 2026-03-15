@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="16" fill="#ffffff" />
+  <path
+    d="M51 31.5A19 19 0 0 0 18.3 18"
+    fill="none"
+    stroke="#5C7CFA"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="5"
+  />
+  <path
+    d="M14 14v12h12"
+    fill="none"
+    stroke="#5C7CFA"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="5"
+  />
+  <path
+    d="M13 32.5A19 19 0 0 0 45.7 46"
+    fill="none"
+    stroke="#5C7CFA"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="5"
+  />
+  <path
+    d="M50 50V38H38"
+    fill="none"
+    stroke="#5C7CFA"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="5"
+  />
+</svg>

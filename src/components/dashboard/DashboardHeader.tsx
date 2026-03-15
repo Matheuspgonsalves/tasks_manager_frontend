@@ -177,7 +177,7 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
                 </svg>
               </Box>
               <Text color="#1E293B" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.03em">
-                Tasks
+                Dolistify
               </Text>
             </HStack>
 
