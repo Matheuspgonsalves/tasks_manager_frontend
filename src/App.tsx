@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { isAuthenticated, subscribeToAuthChanges } from './lib/auth'
 import { CreateTaskPage } from './pages/CreateTaskPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
 
 function navigate(path: string) {
   window.history.pushState({}, '', path)
@@ -24,7 +26,7 @@ function App() {
   useEffect(() => {
     const privateRoutes = ['/dashboard', '/create-task']
     if (privateRoutes.includes(pathname) && !authenticated) {
-      navigate('/')
+      navigate('/login')
     }
   }, [authenticated, pathname])
 
@@ -36,7 +38,15 @@ function App() {
     return <DashboardPage />
   }
 
-  return <LoginPage onLoginSuccess={() => navigate('/dashboard')} />
+  if (pathname === '/login') {
+    return <LoginPage onLoginSuccess={() => navigate('/dashboard')} onNavigate={navigate} />
+  }
+
+  if (pathname === '/registre-se') {
+    return <RegisterPage onNavigate={navigate} />
+  }
+
+  return <LandingPage onNavigate={navigate} />
 }
 
 export default App

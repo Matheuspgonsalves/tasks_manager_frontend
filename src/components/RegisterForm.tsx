@@ -27,24 +27,24 @@ export function RegisterForm({
   }
 
   return (
-    <Box w="full" maxW="420px" rounded="2xl" bg="var(--surface)" p={{ base: 6, md: 8 }} boxShadow="var(--card-shadow)" borderWidth="1px" borderColor="var(--border)">
+    <Box w="full" maxW="420px" rounded="2xl" bg="var(--surface)" p={{ base: 5, md: 8 }} boxShadow="var(--card-shadow)" borderWidth="1px" borderColor="var(--border)">
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
-          <Heading size="xl" textAlign="center" color="var(--text-secondary)">
-            Create your account
+          <Heading size={{ base: 'lg', md: 'xl' }} textAlign="center" color="var(--text-secondary)">
+            Crie sua conta
           </Heading>
-          <Text color="var(--muted-text)" textAlign="center">
-            Fill in your details to register
+          <Text color="var(--muted-text)" textAlign="center" fontSize={{ base: 'sm', md: 'md' }}>
+            Preencha seus dados para se registrar
           </Text>
 
           <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="name">
-            Name
+            Nome
           </label>
           <Input
             id="name"
             value={values.name}
             onChange={(event) => onFieldChange('name', event.target.value)}
-            placeholder="John Doe"
+            placeholder="Seu nome"
             borderColor="var(--border-strong)"
             color="var(--text-secondary)"
             bg="var(--surface)"
@@ -52,14 +52,14 @@ export function RegisterForm({
           {errors.name && <Text mt={-2} color="red.600" fontSize="sm">{errors.name}</Text>}
 
           <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="email">
-            Email
+            E-mail
           </label>
           <Input
             id="email"
             type="email"
             value={values.email}
             onChange={(event) => onFieldChange('email', event.target.value)}
-            placeholder="john@email.com"
+            placeholder="voce@email.com"
             borderColor="var(--border-strong)"
             color="var(--text-secondary)"
             bg="var(--surface)"
@@ -67,14 +67,14 @@ export function RegisterForm({
           {errors.email && <Text mt={-2} color="red.600" fontSize="sm">{errors.email}</Text>}
 
           <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="password">
-            Password
+            Senha
           </label>
           <Input
             id="password"
             type="password"
             value={values.password}
             onChange={(event) => onFieldChange('password', event.target.value)}
-            placeholder="Enter your password"
+            placeholder="Crie uma senha"
             borderColor="var(--border-strong)"
             color="var(--text-secondary)"
             bg="var(--surface)"
@@ -94,8 +94,8 @@ export function RegisterForm({
             </Box>
           )}
 
-          <Button type="submit" bg="var(--accent)" color="white" _hover={{ bg: 'var(--accent-strong)' }} disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Register'}
+          <Button type="submit" bg="var(--accent)" color="white" h={{ base: '46px', md: '40px' }} w="full" _hover={{ bg: 'var(--accent-strong)' }} disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Registrar'}
           </Button>
         </Stack>
       </form>

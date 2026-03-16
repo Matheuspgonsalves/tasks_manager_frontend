@@ -32,29 +32,29 @@ export function LoginForm({
       maxW="420px"
       rounded="2xl"
       bg="var(--surface)"
-      p={{ base: 6, md: 8 }}
+      p={{ base: 5, md: 8 }}
       borderWidth="1px"
       borderColor="var(--border)"
       boxShadow="var(--card-shadow)"
     >
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
-          <Heading size="xl" textAlign="center" color="var(--text-secondary)">
-            Sign in to your account
+          <Heading size={{ base: 'lg', md: 'xl' }} textAlign="center" color="var(--text-secondary)">
+            Entre na sua conta
           </Heading>
-          <Text color="var(--muted-text)" textAlign="center">
-            Enter your credentials to access the system
+          <Text color="var(--muted-text)" textAlign="center" fontSize={{ base: 'sm', md: 'md' }}>
+            Informe suas credenciais para acessar o sistema
           </Text>
 
           <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="email">
-            Email
+            E-mail
           </label>
           <Input
             id="email"
             type="email"
             value={values.email}
             onChange={(event) => onFieldChange('email', event.target.value)}
-            placeholder="you@email.com"
+            placeholder="voce@email.com"
             borderColor="var(--border-strong)"
             color="var(--text-secondary)"
             bg="var(--surface)"
@@ -62,14 +62,14 @@ export function LoginForm({
           {errors.email && <Text mt={-2} color="red.600" fontSize="sm">{errors.email}</Text>}
 
           <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }} htmlFor="password">
-            Password
+            Senha
           </label>
           <Input
             id="password"
             type="password"
             value={values.password}
             onChange={(event) => onFieldChange('password', event.target.value)}
-            placeholder="Your password"
+            placeholder="Sua senha"
             borderColor="var(--border-strong)"
             color="var(--text-secondary)"
             bg="var(--surface)"
@@ -95,12 +95,14 @@ export function LoginForm({
             type="submit"
             bg="var(--accent)"
             color="white"
+            h={{ base: '46px', md: '40px' }}
+            w="full"
             _hover={{ bg: 'var(--accent-strong)' }}
             loading={isSubmitting}
-            loadingText="Signing in"
+            loadingText="Entrando"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Login'}
+            {isSubmitting ? 'Enviando...' : 'Fazer login'}
           </Button>
         </Stack>
       </form>
