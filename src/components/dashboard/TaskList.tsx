@@ -28,6 +28,27 @@ type EditState = {
 
 type TaskFilter = 'all' | 'active' | 'completed'
 
+function EditIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  )
+}
+
+function DeleteIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 6h18" />
+      <path d="M8 6V4h8v2" />
+      <path d="M19 6l-1 14H6L5 6" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+    </svg>
+  )
+}
+
 export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: TaskListProps) {
   const [editing, setEditing] = useState<EditState | null>(null)
   const [filter, setFilter] = useState<TaskFilter>('all')
@@ -66,8 +87,8 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
 
   return (
     <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" overflow="hidden">
-      <Box px={5} py={4} borderBottomWidth="1px" borderColor="var(--border)">
-        <Text color="var(--text-secondary)" fontWeight="700" fontSize="lg">
+      <Box px={{ base: 4, md: 5 }} py={4} borderBottomWidth="1px" borderColor="var(--border)">
+        <Text color="var(--text-secondary)" fontWeight="700" fontSize={{ base: 'md', md: 'lg' }}>
           Your tasks
         </Text>
       </Box>
@@ -79,7 +100,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
           </Text>
         </Box>
       ) : (
-        <Stack separator={<Separator borderColor="var(--border)" />} p={5} gap={4}>
+        <Stack separator={<Separator borderColor="var(--border)" />} p={{ base: 4, md: 5 }} gap={4}>
           {filteredTasks.map((task) => {
             const isEditing = editing?.taskId === task.id
             const isBusy = busyTaskId === task.id || isClearingCompleted
@@ -130,12 +151,12 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                     </HStack>
                   </Stack>
                 ) : (
-                  <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3}>
-                    <Box>
-                      <Text fontSize="lg" fontWeight="700" color="var(--text-secondary)">
+                  <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ base: 'stretch', md: 'center' }} gap={3}>
+                    <Box flex="1" minW="0">
+                      <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="700" color="var(--text-secondary)">
                         {task.title}
                       </Text>
-                      <Text mt={1} color="var(--muted-text)">
+                      <Text mt={1} color="var(--muted-text)" fontSize={{ base: 'sm', md: 'md' }}>
                         {task.description}
                       </Text>
                       {task.dueDate && (
@@ -144,35 +165,50 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
                         </Text>
                       )}
                     </Box>
-                    <HStack>
+                    <Flex
+                      align="center"
+                      justify={{ base: 'space-between', md: 'flex-end' }}
+                      gap={2}
+                      wrap="wrap"
+                      width={{ base: '100%', md: 'auto' }}
+                      flexShrink={0}
+                    >
                       <Badge colorPalette={statusColor[task.status]} fontSize="0.8rem" px={3} py={1} borderRadius="full">
                         {statusLabel[task.status]}
                       </Badge>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        color="var(--muted-text)"
-                        onClick={() =>
-                          setEditing({
-                            taskId: task.id,
-                            title: task.title,
-                            description: task.description,
-                            status: task.status,
-                          })
-                        }
-                      >
-                        ✏
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        color="var(--danger-text)"
-                        onClick={() => onDeleteTask(task.id)}
-                        loading={isBusy}
-                      >
-                        🗑
-                      </Button>
-                    </HStack>
+                      <HStack gap={1} ml={{ base: 'auto', md: 0 }}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          color="var(--muted-text)"
+                          minW="2.5rem"
+                          px={0}
+                          aria-label={`Edit ${task.title}`}
+                          onClick={() =>
+                            setEditing({
+                              taskId: task.id,
+                              title: task.title,
+                              description: task.description,
+                              status: task.status,
+                            })
+                          }
+                        >
+                          <EditIcon />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          color="var(--danger-text)"
+                          minW="2.5rem"
+                          px={0}
+                          aria-label={`Delete ${task.title}`}
+                          onClick={() => onDeleteTask(task.id)}
+                          loading={isBusy}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </HStack>
+                    </Flex>
                   </Flex>
                 )}
               </Box>
@@ -184,7 +220,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
       <Flex
         borderTopWidth="1px"
         borderColor="var(--border)"
-        px={5}
+        px={{ base: 4, md: 5 }}
         py={4}
         align={{ base: 'flex-start', md: 'center' }}
         justify="space-between"
@@ -194,7 +230,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
         <Text color="var(--soft-text)" fontSize="sm">
           {filteredTasks.length} {filteredTasks.length === 1 ? 'item' : 'items'}
         </Text>
-        <HStack gap={2}>
+        <HStack gap={2} wrap="wrap">
           <Button size="sm" variant={filter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={filter === 'all' ? undefined : 'var(--muted-text)'} onClick={() => setFilter('all')}>
             All
           </Button>
@@ -224,6 +260,7 @@ export function TaskList({ tasks, busyTaskId, onUpdateTask, onDeleteTask }: Task
           onClick={clearCompleted}
           disabled={completedTasks.length === 0 || isClearingCompleted}
           loading={isClearingCompleted}
+          alignSelf={{ base: 'stretch', md: 'auto' }}
         >
           Clear completed
         </Button>

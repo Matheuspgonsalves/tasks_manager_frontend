@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { clearAuthSession, getAuthUser, wasRecentlyAuthenticated } from '../lib/auth'
+import { clearAuthSession, getAuthUser, shouldRetryUnauthorizedRequest } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
 import { deleteTask, getTasksByUserId, updateTask } from '../services/tasks.service'
 import type { Task } from '../types/task'
@@ -35,8 +35,7 @@ export function useTasks() {
       setTasks(sorted)
     } catch (error) {
       if (error instanceof UnauthorizedError) {
-        if (allowRetry && wasRecentlyAuthenticated()) {
-          await new Promise((resolve) => window.setTimeout(resolve, 400))
+        if (allowRetry && (await shouldRetryUnauthorizedRequest(0))) {
           await loadTasks(false)
           return
         }
@@ -69,13 +68,18 @@ export function useTasks() {
     }
   }, [tasks])
 
-  async function handleDelete(taskId: string) {
+  async function handleDelete(taskId: string, attempt = 0) {
     setBusyTaskId(taskId)
     try {
       await deleteTask(taskId)
       setTasks((current) => current.filter((task) => task.id !== taskId))
     } catch (error) {
       if (error instanceof UnauthorizedError) {
+        if (await shouldRetryUnauthorizedRequest(attempt)) {
+          await handleDelete(taskId, attempt + 1)
+          return
+        }
+
         clearAuthSession()
         navigate('/')
         return
@@ -87,7 +91,7 @@ export function useTasks() {
     }
   }
 
-  async function handleUpdate(taskId: string, payload: Pick<Task, 'title' | 'description' | 'status'>) {
+  async function handleUpdate(taskId: string, payload: Pick<Task, 'title' | 'description' | 'status'>, attempt = 0) {
     setBusyTaskId(taskId)
     try {
       const authUser = getAuthUser()
@@ -102,6 +106,11 @@ export function useTasks() {
       setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
     } catch (error) {
       if (error instanceof UnauthorizedError) {
+        if (await shouldRetryUnauthorizedRequest(attempt)) {
+          await handleUpdate(taskId, payload, attempt + 1)
+          return
+        }
+
         clearAuthSession()
         navigate('/')
         return

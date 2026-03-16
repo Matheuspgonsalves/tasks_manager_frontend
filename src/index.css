@@ -61,6 +61,7 @@ body {
   background: var(--app-bg);
   color: var(--text-primary);
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;

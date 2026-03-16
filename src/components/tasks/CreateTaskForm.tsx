@@ -21,12 +21,12 @@ export function CreateTaskForm({
   onSubmit,
 }: CreateTaskFormProps) {
   return (
-    <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" p={6}>
+    <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" p={{ base: 4, md: 6 }}>
       <Stack gap={4} as="form" onSubmit={(event) => {
         event.preventDefault()
         void onSubmit()
       }}>
-        <Text color="var(--text-secondary)" fontSize="2xl" fontWeight="800">Create Task</Text>
+        <Text color="var(--text-secondary)" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800">Create Task</Text>
 
         <Field.Root invalid={Boolean(errors.title)}>
           <Field.Label color="var(--muted-text)">Title</Field.Label>
@@ -85,7 +85,7 @@ export function CreateTaskForm({
           </Box>
         )}
 
-        <Button type="submit" colorPalette="blue" loading={isSubmitting}>Create Task</Button>
+        <Button type="submit" colorPalette="blue" loading={isSubmitting} h={{ base: '46px', md: '40px' }}>Create Task</Button>
       </Stack>
     </Box>
   )

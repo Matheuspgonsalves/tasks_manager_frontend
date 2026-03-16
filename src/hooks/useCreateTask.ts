@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { clearAuthSession, getAuthUser } from '../lib/auth'
+import { clearAuthSession, getAuthUser, shouldRetryUnauthorizedRequest } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
 import { taskRegisterSchema, taskSchema } from '../lib/task.schema'
 import type { TaskFormErrors, TaskFormValues } from '../lib/task.schema'
@@ -28,7 +28,7 @@ export function useCreateTask() {
     setErrors((current) => ({ ...current, [field]: undefined }))
   }
 
-  async function submit(): Promise<boolean> {
+  async function submit(attempt = 0): Promise<boolean> {
     const parsed = taskSchema.safeParse(values)
     if (!parsed.success) {
       const nextErrors: TaskFormErrors = {}
@@ -80,6 +80,10 @@ export function useCreateTask() {
       return true
     } catch (error) {
       if (error instanceof UnauthorizedError) {
+        if (await shouldRetryUnauthorizedRequest(attempt)) {
+          return submit(attempt + 1)
+        }
+
         clearAuthSession()
         navigate('/')
         setStatus('error')

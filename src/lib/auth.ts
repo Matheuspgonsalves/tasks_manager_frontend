@@ -118,6 +118,15 @@ export function wasRecentlyAuthenticated(): boolean {
   return Date.now() - meta.lastLoginAt <= RECENT_LOGIN_WINDOW_MS
 }
 
+export async function shouldRetryUnauthorizedRequest(attempt: number): Promise<boolean> {
+  if (attempt > 0 || !wasRecentlyAuthenticated()) {
+    return false
+  }
+
+  await new Promise((resolve) => window.setTimeout(resolve, 400))
+  return true
+}
+
 export function subscribeToAuthChanges(listener: () => void): () => void {
   if (typeof window === 'undefined') {
     return () => undefined
