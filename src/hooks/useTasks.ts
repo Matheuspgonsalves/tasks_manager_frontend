@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { clearAuthSession, getAuthUser } from '../lib/auth'
+import { clearAuthSession, getAuthUser, wasRecentlyAuthenticated } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
 import { deleteTask, getTasksByUserId, updateTask } from '../services/tasks.service'
 import type { Task } from '../types/task'
@@ -15,7 +15,7 @@ export function useTasks() {
   const [errorMessage, setErrorMessage] = useState('')
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
 
-  const loadTasks = useCallback(async () => {
+  const loadTasks = useCallback(async (allowRetry = true) => {
     setIsLoading(true)
     setErrorMessage('')
 
@@ -35,6 +35,12 @@ export function useTasks() {
       setTasks(sorted)
     } catch (error) {
       if (error instanceof UnauthorizedError) {
+        if (allowRetry && wasRecentlyAuthenticated()) {
+          await new Promise((resolve) => window.setTimeout(resolve, 400))
+          await loadTasks(false)
+          return
+        }
+
         clearAuthSession()
         navigate('/')
         return

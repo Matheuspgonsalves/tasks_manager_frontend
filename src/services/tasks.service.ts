@@ -81,7 +81,11 @@ function extractOne(payload: unknown): TaskApiShape {
   return payload as TaskApiShape
 }
 
-function buildHeaders(): HeadersInit {
+function buildHeaders(includeJsonContentType = false): HeadersInit | undefined {
+  if (!includeJsonContentType) {
+    return undefined
+  }
+
   return {
     'Content-Type': 'application/json',
   }
@@ -149,7 +153,7 @@ export async function getTaskById(taskId: string): Promise<Task> {
 export async function createTask(payload: CreateTaskPayload): Promise<Task> {
   const response = await apiFetch(apiEndpoints.users.createTask, {
     method: 'POST',
-    headers: buildHeaders(),
+    headers: buildHeaders(true),
     body: JSON.stringify(payload),
   })
 
@@ -168,7 +172,7 @@ export async function createTask(payload: CreateTaskPayload): Promise<Task> {
 export async function updateTask(taskId: string, payload: UpdateTaskPayload): Promise<Task> {
   const response = await apiFetch(apiEndpoints.users.taskById(taskId), {
     method: 'PUT',
-    headers: buildHeaders(),
+    headers: buildHeaders(true),
     body: JSON.stringify(payload),
   })
 
