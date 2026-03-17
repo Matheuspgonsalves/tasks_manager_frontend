@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { clearAuthSession, getAuthUser, shouldRetryUnauthorizedRequest } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
 import { taskRegisterSchema, taskSchema } from '../lib/task.schema'
 import type { TaskFormErrors, TaskFormValues } from '../lib/task.schema'
+import { getCategoriesByUserId } from '../services/categories.service'
 import { createTask } from '../services/tasks.service'
+import type { Category } from '../types/category'
 
 function navigate(path: string) {
   window.history.pushState({}, '', path)
@@ -14,6 +16,7 @@ const initialValues: TaskFormValues = {
   title: '',
   description: '',
   status: 'pending',
+  categoryId: '',
 }
 
 export function useCreateTask() {
@@ -22,11 +25,48 @@ export function useCreateTask() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'success' | 'error' | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
+  const [categoriesErrorMessage, setCategoriesErrorMessage] = useState('')
 
   function updateField(field: keyof TaskFormValues, value: string) {
     setValues((current) => ({ ...current, [field]: value as TaskFormValues[typeof field] }))
     setErrors((current) => ({ ...current, [field]: undefined }))
   }
+
+  const loadCategories = useCallback(async (attempt = 0) => {
+    setIsLoadingCategories(true)
+    setCategoriesErrorMessage('')
+
+    try {
+      const authUser = getAuthUser()
+      if (!authUser?.id) {
+        throw new Error('Missing auth user id')
+      }
+
+      const response = await getCategoriesByUserId(authUser.id)
+      setCategories(response.categories)
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        if (await shouldRetryUnauthorizedRequest(attempt)) {
+          await loadCategories(attempt + 1)
+          return
+        }
+
+        clearAuthSession()
+        navigate('/')
+        return
+      }
+
+      setCategoriesErrorMessage(error instanceof Error ? error.message : 'Failed to load categories.')
+    } finally {
+      setIsLoadingCategories(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadCategories()
+  }, [loadCategories])
 
   async function submit(attempt = 0): Promise<boolean> {
     const parsed = taskSchema.safeParse(values)
@@ -62,6 +102,7 @@ export function useCreateTask() {
         description: parsed.data.description.trim(),
         status: parsed.data.status,
         userId: authUser.id,
+        categoryId: parsed.data.categoryId?.trim() || undefined,
       }
 
       const registerParsed = taskRegisterSchema.safeParse(registerPayload)
@@ -99,5 +140,16 @@ export function useCreateTask() {
     }
   }
 
-  return { values, errors, isSubmitting, message, status, updateField, submit }
+  return {
+    values,
+    errors,
+    isSubmitting,
+    message,
+    status,
+    categories,
+    isLoadingCategories,
+    categoriesErrorMessage,
+    updateField,
+    submit,
+  }
 }

@@ -75,8 +75,11 @@ export const apiEndpoints = {
   users: {
     byId: (id: string) => `${API_BASE_URL}/users/${id}`,
     tasksByUserId: (userId: string) => `${API_BASE_URL}/users/${userId}/tasks`,
+    categoriesByUserId: (userId: string) => `${API_BASE_URL}/users/${userId}/categories`,
     createTask: `${API_BASE_URL}/users/tasks`,
+    createCategory: `${API_BASE_URL}/users/categories`,
     taskById: (id: string) => `${API_BASE_URL}/users/tasks/${id}`,
+    categoryById: (id: string) => `${API_BASE_URL}/users/categories/${id}`,
     deleteTaskById: (id: string) => `${API_BASE_URL}/users/task/${id}`,
   },
 }

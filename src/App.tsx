@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { isAuthenticated, subscribeToAuthChanges } from './lib/auth'
 import { CreateTaskPage } from './pages/CreateTaskPage'
+import { CategoriesPage } from './pages/CategoriesPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage'
@@ -24,11 +25,15 @@ function App() {
   useEffect(() => subscribeToAuthChanges(() => setAuthenticated(isAuthenticated())), [])
 
   useEffect(() => {
-    const privateRoutes = ['/dashboard', '/create-task']
+    const privateRoutes = ['/dashboard', '/create-task', '/categories']
     if (privateRoutes.includes(pathname) && !authenticated) {
       navigate('/login')
     }
   }, [authenticated, pathname])
+
+  if (pathname === '/categories' && authenticated) {
+    return <CategoriesPage />
+  }
 
   if (pathname === '/create-task' && authenticated) {
     return <CreateTaskPage />

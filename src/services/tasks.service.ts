@@ -6,6 +6,14 @@ type TaskApiShape = {
   title?: string
   description?: string
   status?: string
+  categoryId?: string
+  category_id?: string
+  categoryName?: string
+  category_name?: string
+  category?: {
+    id?: string
+    name?: string
+  }
   dueDate?: string
   due_date?: string
   createdAt?: string
@@ -22,6 +30,7 @@ type CreateTaskPayload = {
   description: string
   status: TaskStatus
   userId: string
+  categoryId?: string
 }
 
 type UpdateTaskPayload = CreateTaskPayload
@@ -47,6 +56,8 @@ function normalizeTask(task: TaskApiShape): Task {
     title: task.title ?? 'Untitled task',
     description: task.description ?? '',
     status: mapStatus(task.status),
+    categoryId: task.categoryId ?? task.category_id ?? task.category?.id,
+    categoryName: task.categoryName ?? task.category_name ?? task.category?.name,
     dueDate: task.dueDate ?? task.due_date,
     createdAt: task.createdAt ?? task.created_at,
     userId: task.userId ?? task.user_id ?? task.user?.id,

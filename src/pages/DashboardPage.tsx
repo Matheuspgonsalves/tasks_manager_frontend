@@ -5,7 +5,7 @@ import { TaskList } from '../components/dashboard/TaskList'
 import { useTasks } from '../hooks/useTasks'
 
 export function DashboardPage() {
-  const { tasks, stats, isLoading, errorMessage, busyTaskId, handleDelete, handleUpdate } = useTasks()
+  const { tasks, stats, isLoading, errorMessage, busyTaskId, categories, handleDelete, handleUpdate } = useTasks()
 
   return (
     <Box as="main" minH="100vh" bg="var(--app-bg)">
@@ -27,7 +27,7 @@ export function DashboardPage() {
               Loading tasks...
             </Box>
           ) : (
-            <TaskList tasks={tasks} busyTaskId={busyTaskId} onDeleteTask={handleDelete} onUpdateTask={handleUpdate} />
+            <TaskList tasks={tasks} categories={categories} busyTaskId={busyTaskId} onDeleteTask={handleDelete} onUpdateTask={handleUpdate} />
           )}
         </Container>
       </Box>

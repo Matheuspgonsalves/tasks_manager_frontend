@@ -5,6 +5,8 @@ export type Task = {
   title: string
   description: string
   status: TaskStatus
+  categoryId?: string
+  categoryName?: string
   dueDate?: string
   createdAt?: string
   userId?: string

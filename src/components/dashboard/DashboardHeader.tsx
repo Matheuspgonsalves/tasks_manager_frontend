@@ -5,17 +5,13 @@ import { ThemeToggle } from '../ThemeToggle'
 import { clearAuthSession } from '../../lib/auth'
 import { logout } from '../../services/auth.service'
 
-function noopAction() {
-  // Placeholder while target pages are not implemented.
-}
-
 function navigate(path: string) {
   window.history.pushState({}, '', path)
   window.dispatchEvent(new PopStateEvent('popstate'))
 }
 
 type DashboardHeaderProps = {
-  active: 'dashboard' | 'create-task'
+  active: 'dashboard' | 'create-task' | 'categories'
 }
 
 type NavItem = {
@@ -166,9 +162,10 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
     {
       key: 'create-categories',
       label: 'Categories',
+      isActive: active === 'categories',
       onClick: () => {
         setIsMobileMenuOpen(false)
-        noopAction()
+        navigate('/categories')
       },
       icon: <CategoriesIcon />,
     },

@@ -1,5 +1,6 @@
 import { Box, Button, Field, Input, Stack, Text, Textarea } from '@chakra-ui/react'
 import type { TaskFormErrors, TaskFormValues } from '../../lib/task.schema'
+import type { Category } from '../../types/category'
 
 type CreateTaskFormProps = {
   values: TaskFormValues
@@ -7,6 +8,9 @@ type CreateTaskFormProps = {
   isSubmitting: boolean
   status: 'success' | 'error' | null
   message: string
+  categories: Category[]
+  isLoadingCategories: boolean
+  categoriesErrorMessage: string
   onFieldChange: (field: keyof TaskFormValues, value: string) => void
   onSubmit: () => Promise<void>
 }
@@ -17,6 +21,9 @@ export function CreateTaskForm({
   isSubmitting,
   status,
   message,
+  categories,
+  isLoadingCategories,
+  categoriesErrorMessage,
   onFieldChange,
   onSubmit,
 }: CreateTaskFormProps) {
@@ -70,6 +77,33 @@ export function CreateTaskForm({
             <option value="pending">Pending</option>
             <option value="done">Done</option>
           </select>
+        </Field.Root>
+
+        <Field.Root invalid={Boolean(errors.categoryId)}>
+          <Field.Label color="var(--muted-text)">Category</Field.Label>
+          <select
+            value={values.categoryId ?? ''}
+            onChange={(event) => onFieldChange('categoryId', event.target.value)}
+            disabled={isLoadingCategories || categories.length === 0}
+            style={{
+              background: 'var(--surface)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-strong)',
+              borderRadius: 10,
+              padding: '12px 10px',
+            }}
+          >
+            <option value="">
+              {isLoadingCategories ? 'Loading categories...' : categories.length === 0 ? 'No categories available' : 'Select a category'}
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name} {category.isDefault ? '(Default)' : '(Custom)'}
+              </option>
+            ))}
+          </select>
+          {errors.categoryId && <Field.ErrorText>{errors.categoryId}</Field.ErrorText>}
+          {!errors.categoryId && categoriesErrorMessage && <Field.ErrorText>{categoriesErrorMessage}</Field.ErrorText>}
         </Field.Root>
 
         {status && (

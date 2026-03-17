@@ -4,7 +4,7 @@ import { CreateTaskForm } from '../components/tasks/CreateTaskForm'
 import { useCreateTask } from '../hooks/useCreateTask'
 
 export function CreateTaskPage() {
-  const { values, errors, isSubmitting, message, status, updateField, submit } = useCreateTask()
+  const { values, errors, isSubmitting, message, status, categories, isLoadingCategories, categoriesErrorMessage, updateField, submit } = useCreateTask()
 
   return (
     <Box as="main" minH="100vh" bg="var(--app-bg)">
@@ -17,6 +17,9 @@ export function CreateTaskPage() {
             isSubmitting={isSubmitting}
             status={status}
             message={message}
+            categories={categories}
+            isLoadingCategories={isLoadingCategories}
+            categoriesErrorMessage={categoriesErrorMessage}
             onFieldChange={updateField}
             onSubmit={submit}
           />

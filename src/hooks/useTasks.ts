@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clearAuthSession, getAuthUser, shouldRetryUnauthorizedRequest } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
+import { getCategoriesByUserId } from '../services/categories.service'
 import { deleteTask, getTasksByUserId, updateTask } from '../services/tasks.service'
+import type { Category } from '../types/category'
 import type { Task } from '../types/task'
 
 function navigate(path: string) {
@@ -9,11 +11,30 @@ function navigate(path: string) {
   window.dispatchEvent(new PopStateEvent('popstate'))
 }
 
+function hydrateTaskCategories(tasks: Task[], categories: Category[]) {
+  return tasks.map((task) => {
+    if (task.categoryName || !task.categoryId) {
+      return task
+    }
+
+    const category = categories.find((item) => item.id === task.categoryId)
+    if (!category) {
+      return task
+    }
+
+    return {
+      ...task,
+      categoryName: category.name,
+    }
+  })
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
 
   const loadTasks = useCallback(async (allowRetry = true) => {
     setIsLoading(true)
@@ -26,13 +47,16 @@ export function useTasks() {
       }
 
       const userTasks = await getTasksByUserId(authUser.id)
-      const sorted = userTasks.sort((a, b) => {
+      const categoriesResponse = await getCategoriesByUserId(authUser.id)
+      const hydratedTasks = hydrateTaskCategories(userTasks, categoriesResponse.categories)
+      const sorted = hydratedTasks.sort((a, b) => {
         const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
         const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
         return bDate - aDate
       })
 
       setTasks(sorted)
+      setCategories(categoriesResponse.categories)
     } catch (error) {
       if (error instanceof UnauthorizedError) {
         if (allowRetry && (await shouldRetryUnauthorizedRequest(0))) {
@@ -91,7 +115,7 @@ export function useTasks() {
     }
   }
 
-  async function handleUpdate(taskId: string, payload: Pick<Task, 'title' | 'description' | 'status'>, attempt = 0) {
+  async function handleUpdate(taskId: string, payload: Pick<Task, 'title' | 'description' | 'status' | 'categoryId'>, attempt = 0) {
     setBusyTaskId(taskId)
     try {
       const authUser = getAuthUser()
@@ -103,7 +127,23 @@ export function useTasks() {
         ...payload,
         userId: authUser.id,
       })
-      setTasks((current) => current.map((task) => (task.id === taskId ? updated : task)))
+      setTasks((current) =>
+        current.map((task) => {
+          if (task.id !== taskId) {
+            return task
+          }
+
+          if (updated.categoryName || !updated.categoryId) {
+            return updated
+          }
+
+          const category = categories.find((item) => item.id === updated.categoryId)
+          return {
+            ...updated,
+            categoryName: category?.name,
+          }
+        }),
+      )
     } catch (error) {
       if (error instanceof UnauthorizedError) {
         if (await shouldRetryUnauthorizedRequest(attempt)) {
@@ -128,6 +168,7 @@ export function useTasks() {
     isLoading,
     errorMessage,
     busyTaskId,
+    categories,
     reload: loadTasks,
     handleDelete,
     handleUpdate,
