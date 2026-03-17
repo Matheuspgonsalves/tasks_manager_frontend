@@ -75,6 +75,10 @@ export const apiEndpoints = {
   users: {
     byId: (id: string) => `${API_BASE_URL}/users/${id}`,
     tasksByUserId: (userId: string) => `${API_BASE_URL}/users/${userId}/tasks`,
+    tasksByStatus: (userId: string, status: string) => `${API_BASE_URL}/users/${userId}/tasks/status?status=${encodeURIComponent(status)}`,
+    tasksByCategory: (userId: string, categoryId: string) =>
+      `${API_BASE_URL}/users/${userId}/tasks/category?categoryId=${encodeURIComponent(categoryId)}`,
+    searchTasks: (userId: string, search: string) => `${API_BASE_URL}/users/${userId}/tasks/search?search=${encodeURIComponent(search)}`,
     categoriesByUserId: (userId: string) => `${API_BASE_URL}/users/${userId}/categories`,
     createTask: `${API_BASE_URL}/users/tasks`,
     createCategory: `${API_BASE_URL}/users/categories`,

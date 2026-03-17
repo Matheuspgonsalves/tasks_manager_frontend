@@ -1,5 +1,6 @@
 import { Badge, Box, Button, Flex, HStack, Input, Separator, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
+import type { ChangeEvent } from 'react'
 import type { Category } from '../../types/category'
 import type { Task, TaskStatus } from '../../types/task'
 import { EditTaskModal } from './EditTaskModal'
@@ -7,7 +8,14 @@ import { EditTaskModal } from './EditTaskModal'
 type TaskListProps = {
   tasks: Task[]
   categories: Category[]
+  isLoading: boolean
   busyTaskId: string | null
+  statusFilter: 'all' | 'pending' | 'done'
+  categoryFilter: string
+  searchTerm: string
+  onStatusFilterChange: (value: 'all' | 'pending' | 'done') => void
+  onCategoryFilterChange: (value: string) => void
+  onSearchTermChange: (value: string) => void
   onUpdateTask: (taskId: string, payload: Pick<Task, 'title' | 'description' | 'status' | 'categoryId'>) => Promise<void>
   onDeleteTask: (taskId: string) => Promise<void>
 }
@@ -25,8 +33,6 @@ const statusLabel: Record<TaskStatus, string> = {
 type EditState = {
   task: Task
 }
-
-type TaskFilter = 'all' | 'active' | 'completed'
 
 function EditIcon() {
   return (
@@ -58,29 +64,25 @@ function SearchIcon() {
   )
 }
 
-export function TaskList({ tasks, categories, busyTaskId, onUpdateTask, onDeleteTask }: TaskListProps) {
+export function TaskList({
+  tasks,
+  categories,
+  isLoading,
+  busyTaskId,
+  statusFilter,
+  categoryFilter,
+  searchTerm,
+  onStatusFilterChange,
+  onCategoryFilterChange,
+  onSearchTermChange,
+  onUpdateTask,
+  onDeleteTask,
+}: TaskListProps) {
   const [editing, setEditing] = useState<EditState | null>(null)
-  const [filter, setFilter] = useState<TaskFilter>('all')
-  const [searchTerm, setSearchTerm] = useState('')
   const [isClearingCompleted, setIsClearingCompleted] = useState(false)
-
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === 'active') return task.status === 'pending'
-    if (filter === 'completed') return task.status === 'done'
-    return true
-  })
-
-  const normalizedSearch = searchTerm.trim().toLowerCase()
-  const visibleTasks = filteredTasks.filter((task) => {
-    if (!normalizedSearch) return true
-
-    return [task.title, task.description, task.categoryName ?? '']
-      .join(' ')
-      .toLowerCase()
-      .includes(normalizedSearch)
-  })
-
   const completedTasks = tasks.filter((task) => task.status === 'done')
+  const visibleTasks = tasks
+  const normalizedSearch = searchTerm.trim()
 
   async function clearCompleted() {
     if (completedTasks.length === 0) return
@@ -101,29 +103,70 @@ export function TaskList({ tasks, categories, busyTaskId, onUpdateTask, onDelete
         Your tasks
       </Text>
 
-      <Box position="relative">
-        <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="var(--soft-text)" pointerEvents="none">
-          <SearchIcon />
+      <Flex direction={{ base: 'column', md: 'row' }} gap={4} align="stretch">
+        <Box position="relative" flex="1">
+          <Box
+            position="absolute"
+            left={4}
+            top="50%"
+            transform="translateY(-50%)"
+            color="var(--muted-text)"
+            pointerEvents="none"
+            zIndex={1}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <SearchIcon />
+          </Box>
+          <Input
+            value={searchTerm}
+            onChange={(event) => onSearchTermChange(event.target.value)}
+            placeholder="Search tasks by title, description or category..."
+            bg="var(--surface)"
+            borderColor="var(--border)"
+            color="var(--text-secondary)"
+            h="48px"
+            pl={12}
+            borderRadius="xl"
+            boxShadow="var(--card-shadow)"
+          />
         </Box>
-        <Input
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          placeholder="Search tasks by title, description or category..."
+
+        <Box
+          as="select"
+          value={categoryFilter}
+          onChange={(event: ChangeEvent<HTMLSelectElement>) => onCategoryFilterChange(event.target.value)}
+          w={{ base: '100%', md: '280px' }}
           bg="var(--surface)"
-          borderColor="var(--border)"
           color="var(--text-secondary)"
+          border="1px solid var(--border)"
+          borderRadius="12px"
+          px={4}
           h="48px"
-          pl={12}
-          borderRadius="xl"
           boxShadow="var(--card-shadow)"
-        />
-      </Box>
+          flexShrink={0}
+        >
+          <option value="">All categories</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </Box>
+      </Flex>
 
       <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" overflow="hidden">
-        {visibleTasks.length === 0 ? (
+        {isLoading ? (
           <Box p={8}>
             <Text color="var(--muted-text)" textAlign="center">
-              {tasks.length === 0 ? 'No tasks found for this user.' : normalizedSearch ? 'No tasks match your search.' : 'No tasks match the selected filter.'}
+              Loading tasks...
+            </Text>
+          </Box>
+        ) : visibleTasks.length === 0 ? (
+          <Box p={8}>
+            <Text color="var(--muted-text)" textAlign="center">
+              {tasks.length === 0 ? 'No tasks found for this user.' : normalizedSearch ? 'No tasks match your search.' : 'No tasks match the selected filters.'}
             </Text>
           </Box>
         ) : (
@@ -254,24 +297,24 @@ export function TaskList({ tasks, categories, busyTaskId, onUpdateTask, onDelete
             {visibleTasks.length} {visibleTasks.length === 1 ? 'item' : 'items'}
           </Text>
           <HStack gap={2} wrap="wrap">
-            <Button size="sm" variant={filter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={filter === 'all' ? undefined : 'var(--muted-text)'} onClick={() => setFilter('all')}>
+            <Button size="sm" variant={statusFilter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={statusFilter === 'all' ? undefined : 'var(--muted-text)'} onClick={() => onStatusFilterChange('all')}>
               All
             </Button>
             <Button
               size="sm"
-              variant={filter === 'active' ? 'subtle' : 'ghost'}
+              variant={statusFilter === 'pending' ? 'subtle' : 'ghost'}
               colorPalette="blue"
-              color={filter === 'active' ? undefined : 'var(--muted-text)'}
-              onClick={() => setFilter('active')}
+              color={statusFilter === 'pending' ? undefined : 'var(--muted-text)'}
+              onClick={() => onStatusFilterChange('pending')}
             >
               Active
             </Button>
             <Button
               size="sm"
-              variant={filter === 'completed' ? 'subtle' : 'ghost'}
+              variant={statusFilter === 'done' ? 'subtle' : 'ghost'}
               colorPalette="blue"
-              color={filter === 'completed' ? undefined : 'var(--muted-text)'}
-              onClick={() => setFilter('completed')}
+              color={statusFilter === 'done' ? undefined : 'var(--muted-text)'}
+              onClick={() => onStatusFilterChange('done')}
             >
               Completed
             </Button>

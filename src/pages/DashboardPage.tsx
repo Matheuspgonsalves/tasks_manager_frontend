@@ -5,7 +5,22 @@ import { TaskList } from '../components/dashboard/TaskList'
 import { useTasks } from '../hooks/useTasks'
 
 export function DashboardPage() {
-  const { tasks, stats, isLoading, errorMessage, busyTaskId, categories, handleDelete, handleUpdate } = useTasks()
+  const {
+    tasks,
+    stats,
+    isLoading,
+    errorMessage,
+    busyTaskId,
+    categories,
+    statusFilter,
+    categoryFilter,
+    searchTerm,
+    setStatusFilter,
+    setCategoryFilter,
+    setSearchTerm,
+    handleDelete,
+    handleUpdate,
+  } = useTasks()
 
   return (
     <Box as="main" minH="100vh" bg="var(--app-bg)">
@@ -22,12 +37,21 @@ export function DashboardPage() {
             <Box bg="var(--danger-bg)" color="var(--danger-text)" borderRadius="xl" p={4} borderWidth="1px" borderColor="var(--danger-border)">
               {errorMessage}
             </Box>
-          ) : isLoading ? (
-            <Box bg="var(--surface)" color="var(--muted-text)" borderRadius="2xl" p={8} borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)">
-              Loading tasks...
-            </Box>
           ) : (
-            <TaskList tasks={tasks} categories={categories} busyTaskId={busyTaskId} onDeleteTask={handleDelete} onUpdateTask={handleUpdate} />
+            <TaskList
+              tasks={tasks}
+              categories={categories}
+              isLoading={isLoading}
+              busyTaskId={busyTaskId}
+              statusFilter={statusFilter}
+              categoryFilter={categoryFilter}
+              searchTerm={searchTerm}
+              onStatusFilterChange={setStatusFilter}
+              onCategoryFilterChange={setCategoryFilter}
+              onSearchTermChange={setSearchTerm}
+              onDeleteTask={handleDelete}
+              onUpdateTask={handleUpdate}
+            />
           )}
         </Container>
       </Box>

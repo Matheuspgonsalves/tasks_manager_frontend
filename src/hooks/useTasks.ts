@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clearAuthSession, getAuthUser, shouldRetryUnauthorizedRequest } from '../lib/auth'
 import { UnauthorizedError } from '../lib/api'
 import { getCategoriesByUserId } from '../services/categories.service'
-import { deleteTask, getTasksByUserId, updateTask } from '../services/tasks.service'
+import { deleteTask, getAllTasks, getTasksByCategory, getTasksByStatus, searchTasks, updateTask } from '../services/tasks.service'
 import type { Category } from '../types/category'
-import type { Task } from '../types/task'
+import type { Task, TaskStatus } from '../types/task'
 
 function navigate(path: string) {
   window.history.pushState({}, '', path)
@@ -35,6 +35,26 @@ export function useTasks() {
   const [errorMessage, setErrorMessage] = useState('')
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'done'>('all')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setDebouncedSearchTerm(searchTerm.trim()), 400)
+    return () => window.clearTimeout(timeoutId)
+  }, [searchTerm])
+
+  const loadCategories = useCallback(async () => {
+    const authUser = getAuthUser()
+    if (!authUser?.id) {
+      throw new Error('Missing auth user id')
+    }
+
+    const categoriesResponse = await getCategoriesByUserId(authUser.id)
+    setCategories(categoriesResponse.categories)
+    return categoriesResponse.categories
+  }, [])
 
   const loadTasks = useCallback(async (allowRetry = true) => {
     setIsLoading(true)
@@ -46,9 +66,15 @@ export function useTasks() {
         throw new Error('Missing auth user id')
       }
 
-      const userTasks = await getTasksByUserId(authUser.id)
-      const categoriesResponse = await getCategoriesByUserId(authUser.id)
-      const hydratedTasks = hydrateTaskCategories(userTasks, categoriesResponse.categories)
+      const userCategories = categories.length > 0 ? categories : await loadCategories()
+      const response = debouncedSearchTerm
+        ? await searchTasks(authUser.id, debouncedSearchTerm)
+        : categoryFilter
+          ? await getTasksByCategory(authUser.id, categoryFilter)
+          : statusFilter === 'all'
+            ? await getAllTasks(authUser.id)
+            : await getTasksByStatus(authUser.id, statusFilter as TaskStatus)
+      const hydratedTasks = hydrateTaskCategories(response.tasks, userCategories)
       const sorted = hydratedTasks.sort((a, b) => {
         const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
         const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
@@ -56,7 +82,6 @@ export function useTasks() {
       })
 
       setTasks(sorted)
-      setCategories(categoriesResponse.categories)
     } catch (error) {
       if (error instanceof UnauthorizedError) {
         if (allowRetry && (await shouldRetryUnauthorizedRequest(0))) {
@@ -69,11 +94,11 @@ export function useTasks() {
         return
       }
 
-      setErrorMessage('Failed to load tasks.')
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to load tasks.')
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [categories, categoryFilter, debouncedSearchTerm, loadCategories, statusFilter])
 
   useEffect(() => {
     void loadTasks()
@@ -169,7 +194,13 @@ export function useTasks() {
     errorMessage,
     busyTaskId,
     categories,
+    statusFilter,
+    categoryFilter,
+    searchTerm,
     reload: loadTasks,
+    setStatusFilter,
+    setCategoryFilter,
+    setSearchTerm,
     handleDelete,
     handleUpdate,
   }

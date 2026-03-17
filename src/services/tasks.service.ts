@@ -1,4 +1,4 @@
-import { UnauthorizedError, apiEndpoints, apiFetch } from '../lib/api'
+import { InvalidApiResponseError, UnauthorizedError, apiEndpoints, apiFetch } from '../lib/api'
 import type { Task, TaskStatus } from '../types/task'
 
 type TaskApiShape = {
@@ -36,6 +36,7 @@ type CreateTaskPayload = {
 type UpdateTaskPayload = CreateTaskPayload
 
 type ApiEnvelope = {
+  success?: boolean
   message?: string
   tasks?: TaskApiShape[] | TaskApiShape
   task?: TaskApiShape
@@ -102,25 +103,43 @@ function buildHeaders(includeJsonContentType = false): HeadersInit | undefined {
   }
 }
 
-export async function getAllTasks(): Promise<Task[]> {
-  const response = await apiFetch(apiEndpoints.users.createTask, {
-    method: 'GET',
-    headers: buildHeaders(),
-  })
-
-  if (response.status === 401) {
-    throw new UnauthorizedError()
+function getErrorMessage(payload: unknown, fallbackMessage: string) {
+  if (payload && typeof payload === 'object' && 'message' in payload && typeof payload.message === 'string') {
+    return payload.message
   }
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch tasks')
-  }
-
-  const payload = await response.json()
-  return extractMany(payload).map(normalizeTask).filter((task) => task.id)
+  return fallbackMessage
 }
 
-export async function getTasksByUserId(userId: string): Promise<Task[]> {
+async function parseJsonSafely(response: Response): Promise<unknown> {
+  const text = await response.text()
+  if (!text) return null
+
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
+    throw new InvalidApiResponseError()
+  }
+}
+
+async function parseTasksResponse(response: Response, fallbackMessage: string): Promise<{ message: string; tasks: Task[] }> {
+  const payload = await parseJsonSafely(response)
+
+  if (!response.ok) {
+    throw new Error(getErrorMessage(payload, fallbackMessage))
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    throw new InvalidApiResponseError()
+  }
+
+  return {
+    message: getErrorMessage(payload, fallbackMessage),
+    tasks: extractMany(payload).map(normalizeTask).filter((task) => task.id),
+  }
+}
+
+export async function getAllTasks(userId: string): Promise<{ message: string; tasks: Task[] }> {
   const response = await apiFetch(apiEndpoints.users.tasksByUserId(userId), {
     method: 'GET',
     headers: buildHeaders(),
@@ -131,15 +150,78 @@ export async function getTasksByUserId(userId: string): Promise<Task[]> {
   }
 
   if (response.status === 404) {
-    return []
+    return {
+      message: 'No tasks found.',
+      tasks: [],
+    }
   }
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch tasks by user id')
+  return parseTasksResponse(response, 'Failed to fetch tasks.')
+}
+
+export async function getTasksByUserId(userId: string): Promise<Task[]> {
+  const result = await getAllTasks(userId)
+  return result.tasks
+}
+
+export async function getTasksByStatus(userId: string, status: TaskStatus): Promise<{ message: string; tasks: Task[] }> {
+  const response = await apiFetch(apiEndpoints.users.tasksByStatus(userId, status), {
+    method: 'GET',
+    headers: buildHeaders(),
+  })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
   }
 
-  const payload = await response.json()
-  return extractMany(payload).map(normalizeTask).filter((task) => task.id)
+  if (response.status === 404) {
+    return {
+      message: 'No tasks found.',
+      tasks: [],
+    }
+  }
+
+  return parseTasksResponse(response, 'Failed to fetch tasks by status.')
+}
+
+export async function getTasksByCategory(userId: string, categoryId: string): Promise<{ message: string; tasks: Task[] }> {
+  const response = await apiFetch(apiEndpoints.users.tasksByCategory(userId, categoryId), {
+    method: 'GET',
+    headers: buildHeaders(),
+  })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
+
+  if (response.status === 404) {
+    return {
+      message: 'No tasks found.',
+      tasks: [],
+    }
+  }
+
+  return parseTasksResponse(response, 'Failed to fetch tasks by category.')
+}
+
+export async function searchTasks(userId: string, search: string): Promise<{ message: string; tasks: Task[] }> {
+  const response = await apiFetch(apiEndpoints.users.searchTasks(userId, search), {
+    method: 'GET',
+    headers: buildHeaders(),
+  })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
+
+  if (response.status === 404) {
+    return {
+      message: 'No tasks found.',
+      tasks: [],
+    }
+  }
+
+  return parseTasksResponse(response, 'Failed to search tasks.')
 }
 
 export async function getTaskById(taskId: string): Promise<Task> {
