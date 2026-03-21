@@ -2,6 +2,7 @@ import { Box, Text } from '@chakra-ui/react'
 import { LoginForm } from '../components/LoginForm'
 import { PublicHeader } from '../components/PublicHeader'
 import { useLogin } from '../hooks/useLogin'
+import { signInWithGoogle } from '../lib/google-auth'
 
 type LoginPageProps = {
   onLoginSuccess: () => void
@@ -15,6 +16,10 @@ export function LoginPage({ onLoginSuccess, onNavigate }: LoginPageProps) {
     if (isSuccess) {
       onLoginSuccess()
     }
+  }
+
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle()
   }
 
   return (
@@ -32,6 +37,7 @@ export function LoginPage({ onLoginSuccess, onNavigate }: LoginPageProps) {
           message={message}
           onFieldChange={updateField}
           onSubmit={handleSubmit}
+          onGoogleSignIn={handleGoogleSignIn}
         />
         <Text color="var(--muted-text)" textAlign="center" px={4} maxW="24rem">
           Ainda não tem conta?{' '}

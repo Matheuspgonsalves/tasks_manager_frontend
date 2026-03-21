@@ -2,6 +2,7 @@ import { Text } from '@chakra-ui/react'
 import { PublicHeader } from '../components/PublicHeader'
 import { RegisterForm } from '../components/RegisterForm'
 import { useRegister } from '../hooks/useRegister'
+import { signInWithGoogle } from '../lib/google-auth'
 
 type RegisterPageProps = {
   onNavigate: (path: string) => void
@@ -9,6 +10,9 @@ type RegisterPageProps = {
 
 export function RegisterPage({ onNavigate }: RegisterPageProps) {
   const { values, errors, isSubmitting, status, message, updateField, submit } = useRegister()
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle()
+  }
 
   return (
     <main className="relative min-h-screen" style={{ background: 'var(--app-bg)' }}>
@@ -25,6 +29,7 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
           message={message}
           onFieldChange={updateField}
           onSubmit={submit}
+          onGoogleSignIn={handleGoogleSignIn}
         />
         <Text color="var(--muted-text)" textAlign="center" px={4} maxW="24rem">
           Já possui conta?{' '}

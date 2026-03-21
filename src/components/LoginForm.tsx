@@ -23,6 +23,17 @@ function EyeOffIcon() {
   )
 }
 
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3.2 14.7 2.3 12 2.3 6.8 2.3 2.6 6.5 2.6 11.7S6.8 21.1 12 21.1c6.9 0 9.1-4.8 9.1-7.3 0-.5-.1-.9-.1-1.3H12Z" />
+      <path fill="#34A853" d="M2.6 11.7c0 1.7.4 3.2 1.2 4.6l3.5-2.7c-.2-.6-.4-1.2-.4-1.9s.1-1.3.4-1.9l-3.5-2.7c-.8 1.3-1.2 2.9-1.2 4.6Z" />
+      <path fill="#FBBC05" d="M12 21.1c2.7 0 4.9-.9 6.6-2.4l-3.2-2.5c-.9.6-2 .9-3.4.9-2.6 0-4.9-1.8-5.7-4.2l-3.6 2.8c1.7 3.2 5 5.4 8.9 5.4Z" />
+      <path fill="#4285F4" d="M18.6 18.7c1.9-1.8 2.5-4.5 2.5-6.3 0-.5-.1-.9-.1-1.3H12v3.9h5.5c-.2 1-.8 2.4-1.9 3.2l3 2.4Z" />
+    </svg>
+  )
+}
+
 type LoginFormProps = {
   values: LoginFormValues
   errors: LoginFormErrors
@@ -31,6 +42,7 @@ type LoginFormProps = {
   message: string
   onFieldChange: (field: keyof LoginFormValues, value: string) => void
   onSubmit: () => Promise<void>
+  onGoogleSignIn: () => Promise<void>
 }
 
 export function LoginForm({
@@ -41,6 +53,7 @@ export function LoginForm({
   message,
   onFieldChange,
   onSubmit,
+  onGoogleSignIn,
 }: LoginFormProps) {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -165,6 +178,24 @@ export function LoginForm({
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Enviando...' : 'Fazer login'}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            h="3rem"
+            w="full"
+            rounded="full"
+            borderColor="var(--border-strong)"
+            color="var(--text-secondary)"
+            bg="var(--surface)"
+            _hover={{ bg: 'var(--surface-hover)' }}
+            onClick={() => void onGoogleSignIn()}
+          >
+            <Box as="span" display="inline-flex" mr={2}>
+              <GoogleIcon />
+            </Box>
+            Entrar com Google
           </Button>
         </Stack>
       </form>

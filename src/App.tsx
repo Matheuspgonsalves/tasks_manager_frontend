@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { isAuthenticated, subscribeToAuthChanges } from './lib/auth'
+import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { CreateTaskPage } from './pages/CreateTaskPage'
 import { CategoriesPage } from './pages/CategoriesPage'
 import { DashboardPage } from './pages/DashboardPage'
@@ -41,6 +42,10 @@ function App() {
 
   if (pathname === '/dashboard' && authenticated) {
     return <DashboardPage />
+  }
+
+  if (pathname === '/auth/callback') {
+    return <AuthCallbackPage onNavigate={navigate} />
   }
 
   if (pathname === '/login') {
