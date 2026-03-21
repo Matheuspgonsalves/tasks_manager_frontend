@@ -1,16 +1,23 @@
 export type AuthUser = {
   id: string
   email: string
-  role: string
+  role?: string
 }
 
 const USER_KEY = 'auth_user'
+const ACCESS_TOKEN_KEY = 'access_token'
+const REFRESH_TOKEN_KEY = 'refresh_token'
 const META_KEY = 'auth_meta'
 const AUTH_CHANGE_EVENT = 'authchange'
 const RECENT_LOGIN_WINDOW_MS = 5000
 
 type AuthMeta = {
   lastLoginAt: number
+}
+
+export type AuthSession = {
+  accessToken: string
+  refreshToken?: string
 }
 
 function getStorage(): Storage | null {
@@ -59,19 +66,27 @@ function dispatchAuthChange(): void {
   window.dispatchEvent(new Event(AUTH_CHANGE_EVENT))
 }
 
-export function saveAuthSession(user: AuthUser): void {
+export function saveAuthSession(user: AuthUser, session: AuthSession): void {
   const storage = getStorage()
   if (!storage) {
     return
   }
 
   storage.setItem(USER_KEY, JSON.stringify(user))
+  storage.setItem(ACCESS_TOKEN_KEY, session.accessToken)
+
+  if (session.refreshToken) {
+    storage.setItem(REFRESH_TOKEN_KEY, session.refreshToken)
+  } else {
+    storage.removeItem(REFRESH_TOKEN_KEY)
+  }
+
   storage.setItem(META_KEY, JSON.stringify({ lastLoginAt: Date.now() }))
   dispatchAuthChange()
 }
 
 export function isAuthenticated(): boolean {
-  return Boolean(getAuthUser())
+  return Boolean(getAuthUser() && getAccessToken())
 }
 
 export function getAuthUser(): AuthUser | null {
@@ -100,8 +115,28 @@ export function clearAuthSession(): void {
   }
 
   storage.removeItem(USER_KEY)
+  storage.removeItem(ACCESS_TOKEN_KEY)
+  storage.removeItem(REFRESH_TOKEN_KEY)
   storage.removeItem(META_KEY)
   dispatchAuthChange()
+}
+
+export function getAccessToken(): string | null {
+  const storage = getStorage()
+  if (!storage) {
+    return null
+  }
+
+  return storage.getItem(ACCESS_TOKEN_KEY)
+}
+
+export function getRefreshToken(): string | null {
+  const storage = getStorage()
+  if (!storage) {
+    return null
+  }
+
+  return storage.getItem(REFRESH_TOKEN_KEY)
 }
 
 export function wasRecentlyAuthenticated(): boolean {

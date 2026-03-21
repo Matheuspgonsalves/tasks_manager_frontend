@@ -6,26 +6,23 @@ export type LoginPayload = {
 }
 
 export type LoginResponse = {
+  success?: boolean
   message: string
   user: {
     id: string
     email: string
-    role: string
+    role?: string
+  }
+  session: {
+    access_token: string
+    refresh_token?: string
+    expires_in?: number
+    token_type?: string
   }
 }
 
 export async function logout(): Promise<void> {
-  const response = await apiFetch(apiEndpoints.authLogout, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    timeoutMs: 8000,
-  })
-
-  if (!response.ok && response.status !== 401) {
-    throw new ApiResponseError(response.status)
-  }
+  return undefined
 }
 
 function isLoginResponse(payload: unknown): payload is LoginResponse {
@@ -40,7 +37,9 @@ function isLoginResponse(payload: unknown): payload is LoginResponse {
       typeof candidate.user === 'object' &&
       typeof candidate.user.id === 'string' &&
       typeof candidate.user.email === 'string' &&
-      typeof candidate.user.role === 'string',
+      candidate.session &&
+      typeof candidate.session === 'object' &&
+      typeof candidate.session.access_token === 'string',
   )
 }
 
@@ -58,11 +57,15 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     throw new UnauthorizedError('Invalid email or password.')
   }
 
-  if (!response.ok) {
-    throw new ApiResponseError(response.status)
-  }
-
   const data: unknown = await response.json()
+
+  if (!response.ok) {
+    const message =
+      data && typeof data === 'object' && 'message' in data && typeof data.message === 'string'
+        ? data.message
+        : 'Login could not be completed.'
+    throw new ApiResponseError(response.status, message)
+  }
 
   if (!isLoginResponse(data)) {
     throw new InvalidApiResponseError()

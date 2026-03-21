@@ -1,3 +1,5 @@
+import { getAccessToken } from './auth'
+
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export class UnauthorizedError extends Error {
@@ -46,6 +48,12 @@ export async function apiFetch(input: string, init: ApiFetchOptions = {}) {
   const { timeoutMs = 15000, signal, ...requestInit } = init
   const controller = new AbortController()
   const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs)
+  const token = getAccessToken()
+  const headers = new Headers(requestInit.headers)
+
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
 
   const abortHandler = () => controller.abort()
   signal?.addEventListener('abort', abortHandler)
@@ -53,7 +61,7 @@ export async function apiFetch(input: string, init: ApiFetchOptions = {}) {
   try {
     return await fetch(input, {
       ...requestInit,
-      credentials: 'include',
+      headers,
       signal: controller.signal,
     })
   } catch (error) {

@@ -65,7 +65,10 @@ export function useLogin() {
         email: parsed.data.email.trim().toLowerCase(),
         password: parsed.data.password,
       })
-      saveAuthSession(data.user)
+      saveAuthSession(data.user, {
+        accessToken: data.session.access_token,
+        refreshToken: data.session.refresh_token,
+      })
 
       setStatus('success')
       setMessage(data.message || 'Login successfully completed.')
@@ -100,7 +103,7 @@ export function useLogin() {
           return false
         }
 
-        setMessage('Login could not be completed. Please review your data and try again.')
+        setMessage(error.message || 'Login could not be completed. Please review your data and try again.')
         return false
       }
 

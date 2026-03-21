@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ApiResponseError } from '../lib/api'
 import { registerSchema } from '../lib/register.schema'
 import type { RegisterFormErrors, RegisterFormValues } from '../lib/register.schema'
 import { registerUser } from '../services/users.service'
@@ -48,18 +49,23 @@ export function useRegister() {
     setMessage('')
 
     try {
-      await registerUser({
+      const response = await registerUser({
         name: parsed.data.name.trim(),
         email: parsed.data.email.trim().toLowerCase(),
         password: parsed.data.password,
       })
 
       setStatus('success')
-      setMessage('Registration successful.')
+      setMessage(response.message || 'Registration successful.')
       setValues(initialValues)
-    } catch {
+    } catch (error) {
       setStatus('error')
-      setMessage('Registration failed. Please try again.')
+
+      if (error instanceof ApiResponseError) {
+        setMessage(error.message)
+      } else {
+        setMessage('Registration failed. Please try again.')
+      }
     } finally {
       setIsSubmitting(false)
     }
