@@ -75,39 +75,44 @@ export function useLogin() {
       setValues((current) => ({ ...current, password: '' }))
       return true
     } catch (error) {
-      setStatus('error')
-
       if (error instanceof UnauthorizedError) {
-        setMessage('Invalid email or password.')
+        setStatus('error')
+        setMessage('E-mail ou senha incorretos.')
         return false
       }
 
       if (error instanceof ApiTimeoutError) {
-        setMessage('The server took too long to respond. It may still be starting up. Please try again in a few seconds.')
+        setStatus(null)
+        setMessage('')
         return false
       }
 
       if (error instanceof ApiConnectionError) {
-        setMessage('Could not connect to the server. Check your connection and try again.')
+        setStatus(null)
+        setMessage('')
         return false
       }
 
       if (error instanceof InvalidApiResponseError) {
-        setMessage('The server returned an unexpected response. Please try again.')
+        setStatus(null)
+        setMessage('')
         return false
       }
 
       if (error instanceof ApiResponseError) {
-        if (error.status >= 500) {
-          setMessage('The server is unavailable right now or still starting. Please try again in a few seconds.')
+        if (error.status === 400 || error.status === 401) {
+          setStatus('error')
+          setMessage('E-mail ou senha incorretos.')
           return false
         }
 
-        setMessage(error.message || 'Login could not be completed. Please review your data and try again.')
+        setStatus(null)
+        setMessage('')
         return false
       }
 
-      setMessage('Login failed due to an unexpected error. Please try again.')
+      setStatus(null)
+      setMessage('')
       return false
     } finally {
       if (slowRequestTimerRef.current) {
