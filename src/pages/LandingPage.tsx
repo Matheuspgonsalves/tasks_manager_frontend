@@ -10,91 +10,186 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     <Box
       as="main"
       minH="100vh"
-      bg="linear-gradient(180deg, var(--surface) 0%, var(--app-bg) 100%)"
+      bg="var(--app-bg)"
       position="relative"
       overflow="hidden"
     >
+      {/* Subtle dot-grid texture — editorial, structural */}
       <Box
         position="absolute"
-        top="-8rem"
-        left="-8rem"
-        w="24rem"
-        h="24rem"
-        borderRadius="full"
-        bg="rgba(92,124,250,0.12)"
-        filter="blur(18px)"
+        inset={0}
+        pointerEvents="none"
+        zIndex={0}
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, var(--border) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          opacity: 0.7,
+        }}
       />
+
+      {/* Accent line — top-right decorative element */}
       <Box
         position="absolute"
-        bottom="-10rem"
-        right="-8rem"
-        w="28rem"
-        h="28rem"
-        borderRadius="full"
-        bg="rgba(92,124,250,0.14)"
-        filter="blur(30px)"
+        top={0}
+        right={0}
+        w={{ base: '160px', md: '280px' }}
+        h="3px"
+        bg="var(--accent)"
+        zIndex={1}
       />
 
       <PublicHeader
         onNavigate={onNavigate}
-        secondaryAction={{ label: 'Faça Login', path: '/login' }}
+        secondaryAction={{ label: 'Entrar', path: '/login' }}
         primaryAction={{ label: 'Registre-se', path: '/registre-se' }}
       />
 
-      <Container maxW="7xl" px={{ base: 4, md: 8 }} position="relative">
-
+      <Container maxW="7xl" px={{ base: 5, md: 10 }} position="relative" zIndex={1}>
         <Flex
           direction="column"
-          align="center"
+          align={{ base: 'flex-start', lg: 'flex-start' }}
           justify="center"
-          textAlign="center"
-          minH={{ base: 'calc(100vh - 92px)', md: 'calc(100vh - 110px)' }}
-          pb={{ base: 12, md: 20 }}
-          pt={{ base: 6, md: 0 }}
+          minH={{ base: 'calc(100vh - 73px)', md: 'calc(100vh - 73px)' }}
+          pb={{ base: 16, md: 24 }}
+          pt={{ base: 10, md: 0 }}
+          maxW="52rem"
         >
-          <Stack gap={{ base: 4, md: 5 }} align="center" maxW={{ base: '100%', md: '62rem' }}>
-            <Text
-              color="var(--text-secondary)"
-              fontWeight="900"
-              fontSize={{ base: '2.5rem', sm: '3rem', md: '4.4rem', lg: '5rem' }}
-              lineHeight={{ base: 1.1, md: 1.02 }}
-              letterSpacing="-0.06em"
-            >
-              Organize suas tarefas com mais clareza, foco e constância.
-            </Text>
+          <Stack gap={{ base: 6, md: 8 }} align="flex-start">
 
+            {/* Label pill */}
+            <Box
+              as="span"
+              display="inline-flex"
+              alignItems="center"
+              gap={2}
+              px={3}
+              py={1}
+              fontSize="0.7rem"
+              fontWeight={700}
+              letterSpacing="0.14em"
+              textTransform="uppercase"
+              color="var(--accent)"
+              bg="var(--accent-soft)"
+              border="1px solid var(--accent-border)"
+              borderRadius="4px"
+            >
+              <Box
+                as="span"
+                w="6px"
+                h="6px"
+                borderRadius="full"
+                bg="var(--accent)"
+                display="inline-block"
+              />
+              Gerenciador de tarefas
+            </Box>
+
+            {/* Headline */}
+            <Box>
+              <Text
+                as="h1"
+                fontSize={{ base: '3.2rem', sm: '4rem', md: '5.5rem', lg: '6.5rem' }}
+                fontWeight={800}
+                lineHeight={0.92}
+                letterSpacing="-0.04em"
+                color="var(--text-primary)"
+                mb={0}
+              >
+                Organize.
+              </Text>
+              <Text
+                as="span"
+                display="block"
+                fontSize={{ base: '3.2rem', sm: '4rem', md: '5.5rem', lg: '6.5rem' }}
+                fontWeight={800}
+                lineHeight={0.92}
+                letterSpacing="-0.04em"
+                color="var(--accent)"
+              >
+                Priorize.
+              </Text>
+              <Text
+                as="span"
+                display="block"
+                fontSize={{ base: '3.2rem', sm: '4rem', md: '5.5rem', lg: '6.5rem' }}
+                fontWeight={800}
+                lineHeight={0.92}
+                letterSpacing="-0.04em"
+                color="var(--text-primary)"
+              >
+                Execute.
+              </Text>
+            </Box>
+
+            {/* Hairline separator */}
+            <Box w="80px" h="2px" bg="var(--border-strong)" />
+
+            {/* Subtitle */}
             <Text
               color="var(--muted-text)"
-              fontSize={{ base: 'md', sm: 'lg', md: '2xl' }}
-              lineHeight={{ base: 1.65, md: 1.7 }}
-              maxW="48rem"
+              fontSize={{ base: 'md', md: 'lg' }}
+              lineHeight={1.65}
+              maxW="34rem"
+              fontWeight={400}
             >
-              O Dolistify centraliza sua rotina em um espaço simples e funcional para acompanhar atividades, visualizar progresso
-              e manter o controle do que precisa ser feito no dia a dia.
+              Centralize sua rotina em um espaço limpo e funcional. Acompanhe atividades,
+              visualize progresso e mantenha o foco no que realmente importa.
             </Text>
 
-            <Text color="var(--muted-text)" fontSize={{ base: 'sm', md: 'md' }} maxW="28rem">
-              Login seguro, dashboard visual e gerenciamento de tarefas em uma experiência web responsiva.
+            {/* CTAs */}
+            <Flex gap={3} wrap="wrap" align="center">
+              <Button
+                size="lg"
+                bg="var(--accent)"
+                color="white"
+                px={{ base: 7, md: 8 }}
+                h={{ base: '50px', md: '52px' }}
+                rounded="lg"
+                fontWeight={700}
+                fontSize={{ base: 'sm', md: 'md' }}
+                letterSpacing="-0.01em"
+                _hover={{ bg: 'var(--accent-strong)', transform: 'translateY(-1px)', boxShadow: '0 8px 24px rgba(21,128,61,0.28)' }}
+                transition="all 0.18s ease"
+                onClick={() => onNavigate('/registre-se')}
+              >
+                Começar gratuitamente
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                color="var(--muted-text)"
+                px={{ base: 5, md: 6 }}
+                h={{ base: '50px', md: '52px' }}
+                rounded="lg"
+                fontWeight={600}
+                fontSize={{ base: 'sm', md: 'md' }}
+                _hover={{ color: 'var(--text-primary)', bg: 'transparent' }}
+                onClick={() => onNavigate('/login')}
+              >
+                Já tenho conta →
+              </Button>
+            </Flex>
+
+            {/* Social proof note */}
+            <Text color="var(--soft-text)" fontSize="xs" fontWeight={500} letterSpacing="0.02em">
+              Login seguro · Dashboard visual · Responsivo
             </Text>
 
-            <Button
-              size={{ base: 'md', md: 'lg' }}
-              mt={2}
-              bg="var(--accent)"
-              color="white"
-              px={{ base: 8, md: 10 }}
-              w={{ base: 'full', sm: 'auto' }}
-              maxW={{ base: '20rem', sm: 'none' }}
-              h={{ base: '52px', md: '56px' }}
-              rounded="xl"
-              _hover={{ bg: 'var(--accent-strong)' }}
-              onClick={() => onNavigate('/registre-se')}
-            >
-              Teste agora
-            </Button>
           </Stack>
         </Flex>
       </Container>
+
+      {/* Bottom accent line */}
+      <Box
+        position="absolute"
+        bottom={0}
+        left={0}
+        w={{ base: '80px', md: '160px' }}
+        h="3px"
+        bg="var(--accent)"
+        zIndex={1}
+      />
     </Box>
   )
 }

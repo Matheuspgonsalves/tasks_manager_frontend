@@ -1,54 +1,83 @@
 @import "tailwindcss";
 
+/* ────────────────────────────────────────────────────────────
+   Palette: Warm Ivory × Forest Emerald
+   Typography: Outfit (Google Fonts)
+   ──────────────────────────────────────────────────────────── */
+
 :root {
-  --app-bg: #f8fafc;
-  --text-primary: #0f172a;
-  --text-secondary: #1e293b;
-  --muted-text: #64748b;
-  --soft-text: #94a3b8;
-  --surface: #ffffff;
-  --surface-hover: #f8fafc;
-  --surface-active: #eef2ff;
-  --surface-muted: #f8fafc;
-  --card-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --accent: #5c7cfa;
-  --accent-strong: #4f6ef7;
-  --accent-soft: #eef2ff;
-  --accent-border: #e0e7ff;
-  --danger-bg: #fef2f2;
-  --danger-border: #fecaca;
-  --danger-text: #b91c1c;
-  --success-bg: #ecfdf5;
-  --success-border: #a7f3d0;
-  --success-text: #047857;
+  /* Backgrounds */
+  --app-bg: #F8F7F3;
+  --surface: #FFFFFF;
+  --surface-hover: #F3F2ED;
+  --surface-active: #ECEAE2;
+  --surface-muted: #F5F4F0;
+
+  /* Text */
+  --text-primary: #1C1917;
+  --text-secondary: #292524;
+  --muted-text: #78716C;
+  --soft-text: #A8A29E;
+
+  /* Borders */
+  --border: #E7E5E4;
+  --border-strong: #D6D3D1;
+
+  /* Accent — Forest Emerald */
+  --accent: #15803D;
+  --accent-strong: #166534;
+  --accent-soft: #F0FDF4;
+  --accent-border: #BBF7D0;
+
+  /* Semantic */
+  --danger-bg: #FFF1F2;
+  --danger-border: #FECDD3;
+  --danger-text: #BE123C;
+  --success-bg: #F0FDF4;
+  --success-border: #BBF7D0;
+  --success-text: #15803D;
+
+  /* Shadows */
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme='dark'] {
-  --app-bg: #0f172a;
-  --text-primary: #e2e8f0;
-  --text-secondary: #f8fafc;
-  --muted-text: #94a3b8;
-  --soft-text: #64748b;
-  --surface: #111827;
-  --surface-hover: #172036;
-  --surface-active: #1e293b;
-  --surface-muted: #0b1220;
-  --card-shadow: 0 24px 48px rgba(2, 6, 23, 0.45);
-  --border: #243041;
-  --border-strong: #334155;
-  --accent: #8ea2ff;
-  --accent-strong: #a5b4fc;
-  --accent-soft: rgba(92, 124, 250, 0.16);
-  --accent-border: rgba(92, 124, 250, 0.28);
-  --danger-bg: rgba(127, 29, 29, 0.24);
-  --danger-border: rgba(239, 68, 68, 0.35);
-  --danger-text: #fca5a5;
-  --success-bg: rgba(6, 95, 70, 0.28);
-  --success-border: rgba(16, 185, 129, 0.35);
-  --success-text: #86efac;
+  /* Backgrounds */
+  --app-bg: #111110;
+  --surface: #1C1C1A;
+  --surface-hover: #262624;
+  --surface-active: #2E2E2B;
+  --surface-muted: #181816;
+
+  /* Text */
+  --text-primary: #FAFAF9;
+  --text-secondary: #F0EFEB;
+  --muted-text: #A8A29E;
+  --soft-text: #78716C;
+
+  /* Borders */
+  --border: #2C2C28;
+  --border-strong: #3B3A35;
+
+  /* Accent — lighter green for dark bg */
+  --accent: #4ADE80;
+  --accent-strong: #86EFAC;
+  --accent-soft: rgba(21, 128, 61, 0.14);
+  --accent-border: rgba(74, 222, 128, 0.22);
+
+  /* Semantic */
+  --danger-bg: rgba(190, 18, 60, 0.12);
+  --danger-border: rgba(244, 63, 94, 0.28);
+  --danger-text: #FB7185;
+  --success-bg: rgba(21, 128, 61, 0.12);
+  --success-border: rgba(74, 222, 128, 0.22);
+  --success-text: #4ADE80;
+
+  /* Shadows */
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.18);
 }
+
+/* ── Base ────────────────────────────────────────────────── */
 
 html,
 body,
@@ -60,9 +89,32 @@ body {
   margin: 0;
   background: var(--app-bg);
   color: var(--text-primary);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ── Native select resets ────────────────────────────────── */
+
+select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 2.5rem !important;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent-soft) !important;
 }

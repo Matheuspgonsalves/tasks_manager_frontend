@@ -18,6 +18,26 @@ type FormState = {
   categoryId: string
 }
 
+const fieldLabel: React.CSSProperties = {
+  fontSize: '0.8125rem',
+  fontWeight: 600,
+  color: 'var(--text-secondary)',
+  letterSpacing: '-0.01em',
+  marginBottom: '6px',
+  display: 'block',
+}
+
+const selectStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--surface)',
+  color: 'var(--text-primary)',
+  border: '1px solid var(--border-strong)',
+  borderRadius: '8px',
+  padding: '10px 36px 10px 12px',
+  fontSize: '0.875rem',
+  fontWeight: 500,
+}
+
 export function EditTaskModal({ task, categories, isSubmitting, onClose, onSubmit }: EditTaskModalProps) {
   const [validationMessage, setValidationMessage] = useState('')
   const [formState, setFormState] = useState<FormState>(() => ({
@@ -27,16 +47,13 @@ export function EditTaskModal({ task, categories, isSubmitting, onClose, onSubmi
     categoryId: task?.categoryId ?? '',
   }))
 
-  if (!task) {
-    return null
-  }
+  if (!task) return null
 
   async function handleSubmit() {
     if (!formState.title.trim() || !formState.description.trim()) {
-      setValidationMessage('Title and description are required.')
+      setValidationMessage('Título e descrição são obrigatórios.')
       return
     }
-
     setValidationMessage('')
     await onSubmit(task.id, {
       title: formState.title.trim(),
@@ -48,99 +65,142 @@ export function EditTaskModal({ task, categories, isSubmitting, onClose, onSubmi
   }
 
   return (
-    <Box position="fixed" inset={0} zIndex={50} bg="rgba(15, 23, 42, 0.35)" display="flex" alignItems="center" justifyContent="center" px={4}>
+    <Box
+      position="fixed"
+      inset={0}
+      zIndex={50}
+      bg="rgba(0,0,0,0.35)"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      px={4}
+    >
       <Box
         as="section"
         role="dialog"
         aria-modal="true"
         w="full"
-        maxW="xl"
+        maxW="480px"
         bg="var(--surface)"
         borderWidth="1px"
         borderColor="var(--border)"
-        borderRadius="2xl"
+        borderRadius="12px"
         boxShadow="var(--card-shadow)"
-        p={{ base: 4, md: 6 }}
+        p={{ base: 5, md: 6 }}
       >
         <Stack gap={4}>
+          {/* Header */}
           <Box>
-            <Text color="var(--text-secondary)" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800">
-              Edit task
-            </Text>
-            <Text mt={1} color="var(--muted-text)" fontSize="sm">
-              Update the task details without leaving the dashboard.
+            <Box display="flex" alignItems="center" gap={2} mb={1}>
+              <Box w="5px" h="5px" borderRadius="1px" bg="var(--accent)" flexShrink={0} />
+              <Text color="var(--text-primary)" fontSize="lg" fontWeight={800} letterSpacing="-0.03em">
+                Editar tarefa
+              </Text>
+            </Box>
+            <Text color="var(--muted-text)" fontSize="sm" pl="13px">
+              Atualize os detalhes sem sair do dashboard.
             </Text>
           </Box>
 
+          {/* Title */}
           <Field.Root invalid={Boolean(validationMessage)}>
-            <Field.Label color="var(--muted-text)">Title</Field.Label>
+            <label style={fieldLabel}>Título</label>
             <Input
               value={formState.title}
-              onChange={(event) => setFormState((current) => ({ ...current, title: event.target.value }))}
+              onChange={(e) => setFormState((s) => ({ ...s, title: e.target.value }))}
+              h="44px"
+              rounded="lg"
+              fontSize="sm"
+              fontWeight={500}
               bg="var(--surface)"
               borderColor="var(--border-strong)"
-              color="var(--text-secondary)"
+              color="var(--text-primary)"
+              _focusVisible={{ borderColor: 'var(--accent)', boxShadow: '0 0 0 2px var(--accent-soft)' }}
             />
           </Field.Root>
 
-          <Field.Root invalid={Boolean(validationMessage)}>
-            <Field.Label color="var(--muted-text)">Description</Field.Label>
+          {/* Description */}
+          <Field.Root>
+            <label style={fieldLabel}>Descrição</label>
             <Textarea
               value={formState.description}
-              onChange={(event) => setFormState((current) => ({ ...current, description: event.target.value }))}
+              onChange={(e) => setFormState((s) => ({ ...s, description: e.target.value }))}
+              rounded="lg"
+              fontSize="sm"
+              fontWeight={500}
               bg="var(--surface)"
               borderColor="var(--border-strong)"
-              color="var(--text-secondary)"
+              color="var(--text-primary)"
+              minH="96px"
+              _focusVisible={{ borderColor: 'var(--accent)', boxShadow: '0 0 0 2px var(--accent-soft)' }}
             />
           </Field.Root>
 
-          <Field.Root>
-            <Field.Label color="var(--muted-text)">Status</Field.Label>
+          {/* Status */}
+          <Box>
+            <label style={fieldLabel}>Status</label>
             <select
               value={formState.status}
-              onChange={(event) => setFormState((current) => ({ ...current, status: event.target.value as TaskStatus }))}
-              style={{
-                background: 'var(--surface)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-strong)',
-                borderRadius: 10,
-                padding: '12px 10px',
-              }}
+              onChange={(e) => setFormState((s) => ({ ...s, status: e.target.value as TaskStatus }))}
+              style={selectStyle}
             >
-              <option value="pending">Pending</option>
-              <option value="done">Done</option>
+              <option value="pending">Pendente</option>
+              <option value="done">Concluída</option>
             </select>
-          </Field.Root>
+          </Box>
 
-          <Field.Root>
-            <Field.Label color="var(--muted-text)">Category</Field.Label>
+          {/* Category */}
+          <Box>
+            <label style={fieldLabel}>Categoria</label>
             <select
               value={formState.categoryId}
-              onChange={(event) => setFormState((current) => ({ ...current, categoryId: event.target.value }))}
-              style={{
-                background: 'var(--surface)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-strong)',
-                borderRadius: 10,
-                padding: '12px 10px',
-              }}
+              onChange={(e) => setFormState((s) => ({ ...s, categoryId: e.target.value }))}
+              style={selectStyle}
             >
-              <option value="">No category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name} {category.isDefault ? '(Default)' : '(Custom)'}
+              <option value="">Sem categoria</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} {c.isDefault ? '(Padrão)' : '(Personalizada)'}
                 </option>
               ))}
             </select>
-            {validationMessage ? <Field.ErrorText>{validationMessage}</Field.ErrorText> : null}
-          </Field.Root>
 
-          <Flex justify="flex-end" gap={3}>
-            <Button variant="ghost" color="var(--muted-text)" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+            {validationMessage && (
+              <Text mt={1.5} color="var(--danger-text)" fontSize="xs" fontWeight={500}>
+                {validationMessage}
+              </Text>
+            )}
+          </Box>
+
+          {/* Actions */}
+          <Flex justify="flex-end" gap={2} pt={1}>
+            <Button
+              variant="ghost"
+              h="40px"
+              px={4}
+              rounded="lg"
+              fontSize="sm"
+              fontWeight={600}
+              color="var(--muted-text)"
+              _hover={{ bg: 'var(--surface-hover)', color: 'var(--text-primary)' }}
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancelar
             </Button>
-            <Button colorPalette="blue" onClick={() => void handleSubmit()} loading={isSubmitting}>
-              Save
+            <Button
+              h="40px"
+              px={5}
+              rounded="lg"
+              fontSize="sm"
+              fontWeight={700}
+              bg="var(--accent)"
+              color="white"
+              _hover={{ bg: 'var(--accent-strong)' }}
+              onClick={() => void handleSubmit()}
+              loading={isSubmitting}
+            >
+              Salvar
             </Button>
           </Flex>
         </Stack>

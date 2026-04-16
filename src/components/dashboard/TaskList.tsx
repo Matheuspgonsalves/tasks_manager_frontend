@@ -20,23 +20,26 @@ type TaskListProps = {
   onDeleteTask: (taskId: string) => Promise<void>
 }
 
-const statusColor: Record<TaskStatus, string> = {
-  pending: 'orange',
-  done: 'green',
+const statusBadge: Record<TaskStatus, { label: string; color: string; bg: string; border: string }> = {
+  pending: {
+    label: 'Pendente',
+    color: '#B45309',
+    bg: '#FFFBEB',
+    border: '#FDE68A',
+  },
+  done: {
+    label: 'Concluída',
+    color: '#15803D',
+    bg: '#F0FDF4',
+    border: '#BBF7D0',
+  },
 }
 
-const statusLabel: Record<TaskStatus, string> = {
-  pending: 'Pending',
-  done: 'Done',
-}
-
-type EditState = {
-  task: Task
-}
+type EditState = { task: Task }
 
 function EditIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z" />
     </svg>
@@ -45,22 +48,42 @@ function EditIcon() {
 
 function DeleteIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 6h18" />
       <path d="M8 6V4h8v2" />
       <path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v6" />
-      <path d="M14 11v6" />
     </svg>
   )
 }
 
 function SearchIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-3.5-3.5" />
     </svg>
+  )
+}
+
+function StatusDot({ status }: { status: TaskStatus }) {
+  const s = statusBadge[status]
+  return (
+    <Box
+      display="inline-flex"
+      alignItems="center"
+      gap={1.5}
+      px={2.5}
+      py={1}
+      borderRadius="5px"
+      bg={s.bg}
+      border={`1px solid ${s.border}`}
+      style={{ color: s.color }}
+    >
+      <Box w="5px" h="5px" borderRadius="full" bg={s.color} flexShrink={0} />
+      <Text fontSize="xs" fontWeight={600} color={s.color} letterSpacing="0.01em">
+        {s.label}
+      </Text>
+    </Box>
   )
 }
 
@@ -80,18 +103,15 @@ export function TaskList({
 }: TaskListProps) {
   const [editing, setEditing] = useState<EditState | null>(null)
   const [isClearingCompleted, setIsClearingCompleted] = useState(false)
-  const completedTasks = tasks.filter((task) => task.status === 'done')
+  const completedTasks = tasks.filter((t) => t.status === 'done')
   const visibleTasks = tasks
   const normalizedSearch = searchTerm.trim()
 
   async function clearCompleted() {
     if (completedTasks.length === 0) return
-
     setIsClearingCompleted(true)
     try {
-      for (const task of completedTasks) {
-        await onDeleteTask(task.id)
-      }
+      for (const task of completedTasks) await onDeleteTask(task.id)
     } finally {
       setIsClearingCompleted(false)
     }
@@ -99,81 +119,103 @@ export function TaskList({
 
   return (
     <Stack gap={4}>
-      <Text color="var(--text-secondary)" fontWeight="700" fontSize={{ base: 'xl', md: '2xl' }}>
-        Your tasks
-      </Text>
+      {/* Section header */}
+      <Flex align="center" justify="space-between" gap={4} wrap="wrap">
+        <Box>
+          <Text color="var(--text-primary)" fontWeight={800} fontSize={{ base: 'lg', md: 'xl' }} letterSpacing="-0.03em">
+            Suas tarefas
+          </Text>
+          <Text color="var(--muted-text)" fontSize="sm" fontWeight={400} mt={0.5}>
+            {tasks.length === 0 ? 'Nenhuma tarefa criada ainda' : `${tasks.length} ${tasks.length === 1 ? 'tarefa' : 'tarefas'} no total`}
+          </Text>
+        </Box>
+      </Flex>
 
-      <Flex direction={{ base: 'column', md: 'row' }} gap={4} align="stretch">
+      {/* Filters */}
+      <Flex direction={{ base: 'column', md: 'row' }} gap={3}>
         <Box position="relative" flex="1">
           <Box
             position="absolute"
-            left={4}
+            left={3}
             top="50%"
             transform="translateY(-50%)"
-            color="var(--muted-text)"
+            color="var(--soft-text)"
             pointerEvents="none"
             zIndex={1}
             display="flex"
-            alignItems="center"
-            justifyContent="center"
           >
             <SearchIcon />
           </Box>
           <Input
             value={searchTerm}
-            onChange={(event) => onSearchTermChange(event.target.value)}
-            placeholder="Search tasks by title, description or category..."
+            onChange={(e) => onSearchTermChange(e.target.value)}
+            placeholder="Buscar tarefas..."
             bg="var(--surface)"
             borderColor="var(--border)"
-            color="var(--text-secondary)"
-            h="48px"
-            pl={12}
-            borderRadius="xl"
-            boxShadow="var(--card-shadow)"
+            color="var(--text-primary)"
+            h="42px"
+            pl={9}
+            borderRadius="lg"
+            fontSize="sm"
+            fontWeight={500}
+            _placeholder={{ color: 'var(--soft-text)' }}
+            _hover={{ borderColor: 'var(--border-strong)' }}
+            _focusVisible={{ borderColor: 'var(--accent)', boxShadow: '0 0 0 2px var(--accent-soft)' }}
           />
         </Box>
 
         <Box
           as="select"
           value={categoryFilter}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) => onCategoryFilterChange(event.target.value)}
-          w={{ base: '100%', md: '280px' }}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => onCategoryFilterChange(e.target.value)}
+          w={{ base: '100%', md: '220px' }}
           bg="var(--surface)"
-          color="var(--text-secondary)"
+          color="var(--text-primary)"
           border="1px solid var(--border)"
-          borderRadius="12px"
-          px={4}
-          h="48px"
-          boxShadow="var(--card-shadow)"
+          borderRadius="8px"
+          px={3}
+          h="42px"
           flexShrink={0}
+          fontSize="0.875rem"
+          fontWeight={500}
         >
-          <option value="">All categories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
+          <option value="">Todas as categorias</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </Box>
       </Flex>
 
-      <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" overflow="hidden">
+      {/* Table card */}
+      <Box
+        bg="var(--surface)"
+        borderRadius="10px"
+        borderWidth="1px"
+        borderColor="var(--border)"
+        boxShadow="var(--card-shadow)"
+        overflow="hidden"
+      >
         {isLoading ? (
-          <Box p={8}>
-            <Text color="var(--muted-text)" textAlign="center">
-              Loading tasks...
-            </Text>
+          <Box p={10} textAlign="center">
+            <Text color="var(--muted-text)" fontSize="sm">Carregando tarefas...</Text>
           </Box>
         ) : visibleTasks.length === 0 ? (
-          <Box p={8}>
-            <Text color="var(--muted-text)" textAlign="center">
-              {tasks.length === 0 ? 'No tasks found for this user.' : normalizedSearch ? 'No tasks match your search.' : 'No tasks match the selected filters.'}
+          <Box p={10} textAlign="center">
+            <Text color="var(--soft-text)" fontSize="2xl" mb={2}>—</Text>
+            <Text color="var(--muted-text)" fontSize="sm">
+              {tasks.length === 0
+                ? 'Nenhuma tarefa ainda. Crie sua primeira!'
+                : normalizedSearch
+                ? 'Nenhuma tarefa corresponde à busca.'
+                : 'Nenhuma tarefa com os filtros selecionados.'}
             </Text>
           </Box>
         ) : (
           <Box>
+            {/* Table header */}
             <Box
               display={{ base: 'none', md: 'grid' }}
-              gridTemplateColumns="minmax(180px, 1.3fr) minmax(240px, 2fr) minmax(140px, 1fr) minmax(120px, 0.8fr) 88px"
+              gridTemplateColumns="minmax(160px, 1.2fr) minmax(220px, 2fr) minmax(130px, 1fr) minmax(110px, 0.8fr) 80px"
               gap={4}
               px={5}
               py={3}
@@ -181,11 +223,19 @@ export function TaskList({
               borderColor="var(--border)"
               bg="var(--surface-muted)"
             >
-              <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Task</Text>
-              <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Description</Text>
-              <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Category</Text>
-              <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Status</Text>
-              <Text fontSize="sm" fontWeight="700" color="var(--muted-text)" textAlign="right">Actions</Text>
+              {['Tarefa', 'Descrição', 'Categoria', 'Status', 'Ações'].map((col, i) => (
+                <Text
+                  key={col}
+                  fontSize="0.7rem"
+                  fontWeight={700}
+                  color="var(--soft-text)"
+                  textTransform="uppercase"
+                  letterSpacing="0.08em"
+                  textAlign={i === 4 ? 'right' : 'left'}
+                >
+                  {col}
+                </Text>
+              ))}
             </Box>
 
             <Stack separator={<Separator borderColor="var(--border)" />} p={{ base: 4, md: 0 }} gap={{ base: 4, md: 0 }}>
@@ -193,70 +243,92 @@ export function TaskList({
                 const isBusy = busyTaskId === task.id || isClearingCompleted
 
                 return (
-                  <Box key={task.id} px={{ base: 0, md: 5 }} py={{ base: 0, md: 4 }}>
+                  <Box
+                    key={task.id}
+                    px={{ base: 0, md: 5 }}
+                    py={{ base: 0, md: 4 }}
+                    transition="background 0.1s"
+                    _hover={{ bg: { base: 'transparent', md: 'var(--surface-hover)' } }}
+                  >
                     <Box
                       display={{ base: 'flex', md: 'grid' }}
                       flexDirection="column"
-                      gridTemplateColumns="minmax(180px, 1.3fr) minmax(240px, 2fr) minmax(140px, 1fr) minmax(120px, 0.8fr) 88px"
-                      gap={{ base: 3, md: 4 }}
+                      gridTemplateColumns="minmax(160px, 1.2fr) minmax(220px, 2fr) minmax(130px, 1fr) minmax(110px, 0.8fr) 80px"
+                      gap={{ base: 2.5, md: 4 }}
                       alignItems={{ base: 'stretch', md: 'center' }}
                     >
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Task
+                      {/* Title */}
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Tarefa
                         </Text>
-                        <Text fontSize={{ base: 'md', md: 'md' }} fontWeight="700" color="var(--text-secondary)">
+                        <Text fontSize="sm" fontWeight={700} color="var(--text-primary)" lineClamp={1}>
                           {task.title}
                         </Text>
-                        {task.dueDate ? (
-                          <Text mt={1} fontSize="sm" color="var(--soft-text)">
-                            Due: {task.dueDate}
-                          </Text>
-                        ) : null}
-                      </Box>
-
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Description
-                        </Text>
-                        <Text color="var(--muted-text)" fontSize="sm" lineClamp={2}>
-                          {task.description}
-                        </Text>
-                      </Box>
-
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Category
-                        </Text>
-                        {task.categoryName ? (
-                          <Badge colorPalette="blue" variant="subtle" fontSize="0.8rem" px={3} py={1} borderRadius="full">
-                            {task.categoryName}
-                          </Badge>
-                        ) : (
-                          <Text color="var(--soft-text)" fontSize="sm">
-                            No category
+                        {task.dueDate && (
+                          <Text mt={0.5} fontSize="xs" color="var(--soft-text)" fontWeight={500}>
+                            Prazo: {task.dueDate}
                           </Text>
                         )}
                       </Box>
 
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Status
+                      {/* Description */}
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Descrição
                         </Text>
-                        <Badge colorPalette={statusColor[task.status]} fontSize="0.8rem" px={3} py={1} borderRadius="full">
-                          {statusLabel[task.status]}
-                        </Badge>
+                        <Text color="var(--muted-text)" fontSize="sm" fontWeight={400} lineClamp={2}>
+                          {task.description}
+                        </Text>
                       </Box>
 
-                      <Flex justify={{ base: 'flex-end', md: 'flex-end' }}>
-                        <HStack gap={1}>
+                      {/* Category */}
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Categoria
+                        </Text>
+                        {task.categoryName ? (
+                          <Badge
+                            variant="subtle"
+                            fontSize="0.7rem"
+                            fontWeight={600}
+                            px={2}
+                            py={0.5}
+                            borderRadius="4px"
+                            bg="var(--surface-muted)"
+                            color="var(--muted-text)"
+                            borderWidth="1px"
+                            borderColor="var(--border)"
+                            letterSpacing="0.01em"
+                          >
+                            {task.categoryName}
+                          </Badge>
+                        ) : (
+                          <Text color="var(--soft-text)" fontSize="xs" fontWeight={400}>—</Text>
+                        )}
+                      </Box>
+
+                      {/* Status */}
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Status
+                        </Text>
+                        <StatusDot status={task.status} />
+                      </Box>
+
+                      {/* Actions */}
+                      <Flex justify="flex-end">
+                        <HStack gap={0.5}>
                           <Button
                             size="sm"
                             variant="ghost"
                             color="var(--muted-text)"
-                            minW="2.5rem"
+                            minW="32px"
+                            h="32px"
                             px={0}
-                            aria-label={`Edit ${task.title}`}
+                            rounded="md"
+                            aria-label={`Editar ${task.title}`}
+                            _hover={{ bg: 'var(--surface-active)', color: 'var(--accent)' }}
                             onClick={() => setEditing({ task })}
                           >
                             <EditIcon />
@@ -264,10 +336,13 @@ export function TaskList({
                           <Button
                             size="sm"
                             variant="ghost"
-                            color="var(--danger-text)"
-                            minW="2.5rem"
+                            color="var(--muted-text)"
+                            minW="32px"
+                            h="32px"
                             px={0}
-                            aria-label={`Delete ${task.title}`}
+                            rounded="md"
+                            aria-label={`Excluir ${task.title}`}
+                            _hover={{ bg: 'var(--danger-bg)', color: 'var(--danger-text)' }}
                             onClick={() => onDeleteTask(task.id)}
                             loading={isBusy}
                           >
@@ -283,52 +358,63 @@ export function TaskList({
           </Box>
         )}
 
+        {/* Footer */}
         <Flex
           borderTopWidth="1px"
           borderColor="var(--border)"
           px={{ base: 4, md: 5 }}
-          py={4}
-          align={{ base: 'flex-start', md: 'center' }}
+          py={3}
+          align="center"
           justify="space-between"
           gap={4}
-          direction={{ base: 'column', md: 'row' }}
+          wrap="wrap"
+          bg="var(--surface-muted)"
         >
-          <Text color="var(--soft-text)" fontSize="sm">
-            {visibleTasks.length} {visibleTasks.length === 1 ? 'item' : 'items'}
+          <Text color="var(--soft-text)" fontSize="xs" fontWeight={500}>
+            {visibleTasks.length} {visibleTasks.length === 1 ? 'item' : 'itens'}
           </Text>
-          <HStack gap={2} wrap="wrap">
-            <Button size="sm" variant={statusFilter === 'all' ? 'subtle' : 'ghost'} colorPalette="blue" color={statusFilter === 'all' ? undefined : 'var(--muted-text)'} onClick={() => onStatusFilterChange('all')}>
-              All
-            </Button>
-            <Button
-              size="sm"
-              variant={statusFilter === 'pending' ? 'subtle' : 'ghost'}
-              colorPalette="blue"
-              color={statusFilter === 'pending' ? undefined : 'var(--muted-text)'}
-              onClick={() => onStatusFilterChange('pending')}
-            >
-              Active
-            </Button>
-            <Button
-              size="sm"
-              variant={statusFilter === 'done' ? 'subtle' : 'ghost'}
-              colorPalette="blue"
-              color={statusFilter === 'done' ? undefined : 'var(--muted-text)'}
-              onClick={() => onStatusFilterChange('done')}
-            >
-              Completed
-            </Button>
+
+          <HStack gap={1}>
+            {(['all', 'pending', 'done'] as const).map((filter) => {
+              const labels = { all: 'Todas', pending: 'Pendentes', done: 'Concluídas' }
+              const active = statusFilter === filter
+              return (
+                <Button
+                  key={filter}
+                  size="xs"
+                  h="28px"
+                  px={3}
+                  rounded="md"
+                  fontWeight={active ? 700 : 500}
+                  fontSize="xs"
+                  bg={active ? 'var(--accent-soft)' : 'transparent'}
+                  color={active ? 'var(--accent)' : 'var(--muted-text)'}
+                  borderWidth="1px"
+                  borderColor={active ? 'var(--accent-border)' : 'transparent'}
+                  _hover={{ bg: active ? 'var(--accent-soft)' : 'var(--surface-hover)', color: active ? 'var(--accent)' : 'var(--text-primary)' }}
+                  onClick={() => onStatusFilterChange(filter)}
+                >
+                  {labels[filter]}
+                </Button>
+              )
+            })}
           </HStack>
+
           <Button
-            size="sm"
+            size="xs"
+            h="28px"
+            px={3}
+            rounded="md"
+            fontWeight={500}
+            fontSize="xs"
             variant="ghost"
             color="var(--muted-text)"
+            _hover={{ bg: 'var(--danger-bg)', color: 'var(--danger-text)' }}
             onClick={clearCompleted}
             disabled={completedTasks.length === 0 || isClearingCompleted}
             loading={isClearingCompleted}
-            alignSelf={{ base: 'stretch', md: 'auto' }}
           >
-            Clear completed
+            Limpar concluídas
           </Button>
         </Flex>
       </Box>

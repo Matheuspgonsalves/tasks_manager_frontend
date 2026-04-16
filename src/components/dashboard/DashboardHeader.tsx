@@ -24,38 +24,36 @@ type NavItem = {
 
 function DashboardIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="3" width="7" height="4.5" rx="1.5" />
-      <rect x="14" y="10.5" width="7" height="10.5" rx="1.5" />
-      <rect x="3" y="13.5" width="7" height="7.5" rx="1.5" />
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="4.5" rx="1" />
+      <rect x="14" y="10.5" width="7" height="10.5" rx="1" />
+      <rect x="3" y="13.5" width="7" height="7.5" rx="1" />
     </svg>
   )
 }
 
 function CreateTaskIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M12 5v14" />
       <path d="M5 12h14" />
-      <path d="M5 5h14v14H5z" />
     </svg>
   )
 }
 
 function CategoriesIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M10 4H5a1 1 0 0 0-1 1v5l8.5 8.5a2.1 2.1 0 0 0 3 0l3-3a2.1 2.1 0 0 0 0-3L10 4Z" />
       <path d="M7.5 7.5h.01" />
-      <path d="m14 6 4 4" />
     </svg>
   )
 }
 
 function LogoutIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <path d="M16 17l5-5-5-5" />
       <path d="M21 12H9" />
@@ -65,7 +63,7 @@ function LogoutIcon() {
 
 function MenuIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M4 7h16" />
       <path d="M4 12h16" />
       <path d="M4 17h16" />
@@ -75,46 +73,48 @@ function MenuIcon() {
 
 function CloseIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
     </svg>
   )
 }
 
-type NavButtonProps = NavItem & {
-  fullWidth?: boolean
-}
-
-function NavButton({ label, icon, isActive, onClick, fullWidth = false }: NavButtonProps) {
+function NavButton({ label, icon, isActive, onClick, fullWidth = false }: NavItem & { fullWidth?: boolean }) {
   return (
     <Button
       onClick={onClick}
       variant="ghost"
-      h="42px"
-      px={4}
+      h="36px"
+      px={3}
+      gap={2}
       w={fullWidth ? 'full' : 'auto'}
       justifyContent={fullWidth ? 'flex-start' : 'center'}
-      rounded="xl"
-      fontWeight="600"
+      rounded="md"
+      fontWeight={isActive ? 700 : 500}
       fontSize="sm"
       color={isActive ? 'var(--accent)' : 'var(--muted-text)'}
       bg={isActive ? 'var(--accent-soft)' : 'transparent'}
-      borderWidth="1px"
-      borderColor={isActive ? 'var(--accent-border)' : 'transparent'}
-      transition="all 0.2s ease"
+      position="relative"
+      transition="all 0.15s"
       _hover={{
         bg: isActive ? 'var(--accent-soft)' : 'var(--surface-hover)',
-        color: 'var(--accent-strong)',
-      }}
-      _active={{
-        bg: isActive ? 'var(--accent-soft)' : 'var(--surface-active)',
+        color: isActive ? 'var(--accent)' : 'var(--text-primary)',
       }}
     >
-      <HStack gap={2} align="center">
-        <Box color="currentColor">{icon}</Box>
-        <Text>{label}</Text>
-      </HStack>
+      <Box color="currentColor" display="flex" alignItems="center">{icon}</Box>
+      <Text>{label}</Text>
+      {isActive && !fullWidth && (
+        <Box
+          position="absolute"
+          bottom="-1px"
+          left="12px"
+          right="12px"
+          h="2px"
+          bg="var(--accent)"
+          borderRadius="full"
+        />
+      )}
     </Button>
   )
 }
@@ -125,11 +125,10 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
 
   async function handleLogout() {
     setIsLoggingOut(true)
-
     try {
       await logout()
     } catch {
-      // Clear local session even if the backend is temporarily unavailable.
+      // Clear local session even if backend is temporarily unavailable.
     } finally {
       clearAuthSession()
       setIsMobileMenuOpen(false)
@@ -143,30 +142,21 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
       key: 'dashboard',
       label: 'Dashboard',
       isActive: active === 'dashboard',
-      onClick: () => {
-        setIsMobileMenuOpen(false)
-        navigate('/dashboard')
-      },
+      onClick: () => { setIsMobileMenuOpen(false); navigate('/dashboard') },
       icon: <DashboardIcon />,
     },
     {
       key: 'create-task',
-      label: 'New Task',
+      label: 'Nova tarefa',
       isActive: active === 'create-task',
-      onClick: () => {
-        setIsMobileMenuOpen(false)
-        navigate('/create-task')
-      },
+      onClick: () => { setIsMobileMenuOpen(false); navigate('/create-task') },
       icon: <CreateTaskIcon />,
     },
     {
       key: 'create-categories',
-      label: 'Categories',
+      label: 'Categorias',
       isActive: active === 'categories',
-      onClick: () => {
-        setIsMobileMenuOpen(false)
-        navigate('/categories')
-      },
+      onClick: () => { setIsMobileMenuOpen(false); navigate('/categories') },
       icon: <CategoriesIcon />,
     },
   ]
@@ -181,106 +171,66 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
       bg="var(--surface)"
       borderBottomWidth="1px"
       borderColor="var(--border)"
-      boxShadow="0 1px 0 rgba(148, 163, 184, 0.08)"
     >
-      <Container display={{ base: 'none', lg: 'block' }} maxW="7xl" px={{ base: 4, md: 8 }}>
-        <Flex
-          h={{ base: 'auto', lg: '72px' }}
-          minH={{ base: '72px', lg: '72px' }}
-          align={{ base: 'flex-start', lg: 'center' }}
-          justify="space-between"
-          gap={4}
-          py={{ base: 3, lg: 0 }}
-          direction={{ base: 'column', lg: 'row' }}
-        >
-          <Flex
-            align={{ base: 'flex-start', lg: 'center' }}
-            justify="flex-start"
-            w="full"
-            gap={{ base: 4, lg: 8 }}
-            direction={{ base: 'column', lg: 'row' }}
-            flex="1"
-          >
-            <HStack gap={3} flexShrink={0} align="center">
-              <Box color="var(--accent)">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
-                  <path d="M21 12a9 9 0 0 0-15.5-6.36" />
-                  <path d="M3 4v5h5" />
-                  <path d="M3 12a9 9 0 0 0 15.5 6.36" />
-                  <path d="M21 20v-5h-5" />
-                </svg>
-              </Box>
-              <Text color="var(--text-secondary)" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.03em">
+      {/* Desktop */}
+      <Container display={{ base: 'none', lg: 'block' }} maxW="7xl" px={{ base: 5, md: 10 }}>
+        <Flex h="60px" align="center" justify="space-between" gap={4}>
+          {/* Left: wordmark + nav */}
+          <HStack gap={6} flex="1" minW={0}>
+            <HStack
+              gap={2}
+              flexShrink={0}
+              cursor="pointer"
+              onClick={() => navigate('/dashboard')}
+              _hover={{ opacity: 0.7 }}
+              transition="opacity 0.15s"
+            >
+              <Box w="7px" h="7px" borderRadius="2px" bg="var(--accent)" flexShrink={0} />
+              <Text color="var(--text-primary)" fontSize="md" fontWeight={800} letterSpacing="-0.04em">
                 Dolistify
               </Text>
             </HStack>
 
-            <HStack
-              gap={2}
-              flexWrap={{ base: 'wrap', lg: 'nowrap' }}
-              justify="flex-start"
-              align="center"
-              flex="1"
-              overflowX={{ base: 'visible', lg: 'auto' }}
-              whiteSpace="nowrap"
-              css={{
-                scrollbarWidth: 'none',
-              }}
-            >
+            {/* Nav separator */}
+            <Box w="1px" h="20px" bg="var(--border)" flexShrink={0} />
+
+            <HStack gap={1} overflowX="auto" whiteSpace="nowrap" css={{ scrollbarWidth: 'none' }}>
               {navItems.map((item) => (
-                <NavButton
-                  key={item.key}
-                  label={item.label}
-                  icon={item.icon}
-                  isActive={item.isActive}
-                  onClick={item.onClick}
-                />
+                <NavButton key={item.key} {...item} />
               ))}
             </HStack>
-          </Flex>
+          </HStack>
 
-          <HStack alignSelf={{ base: 'flex-end', lg: 'center' }} gap={3} flexShrink={0}>
+          {/* Right: theme + logout */}
+          <HStack gap={2} flexShrink={0}>
             <ThemeToggle compact />
             <Button
               onClick={handleLogout}
               loading={isLoggingOut}
               variant="ghost"
-              h="42px"
-              px={4}
-              rounded="xl"
-              fontWeight="600"
+              h="36px"
+              px={3}
+              gap={2}
+              rounded="md"
+              fontWeight={500}
               fontSize="sm"
               color="var(--muted-text)"
-              transition="all 0.2s ease"
-              _hover={{
-                bg: 'var(--surface-hover)',
-                color: 'var(--accent-strong)',
-              }}
-              _active={{
-                bg: 'var(--surface-active)',
-              }}
+              _hover={{ bg: 'var(--danger-bg)', color: 'var(--danger-text)' }}
+              transition="all 0.15s"
             >
-              <HStack gap={2}>
-                <LogoutIcon />
-                <Text>Logout</Text>
-              </HStack>
+              <LogoutIcon />
+              <Text>Sair</Text>
             </Button>
           </HStack>
         </Flex>
       </Container>
 
+      {/* Mobile */}
       <Container display={{ base: 'block', lg: 'none' }} maxW="7xl" px={{ base: 4, md: 6 }}>
-        <Flex minH="72px" align="center" justify="space-between" py={3} gap={3}>
-          <HStack gap={3} minW={0}>
-            <Box color="var(--accent)">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
-                <path d="M21 12a9 9 0 0 0-15.5-6.36" />
-                <path d="M3 4v5h5" />
-                <path d="M3 12a9 9 0 0 0 15.5 6.36" />
-                <path d="M21 20v-5h-5" />
-              </svg>
-            </Box>
-            <Text color="var(--text-secondary)" fontSize="xl" fontWeight="800" letterSpacing="-0.03em">
+        <Flex minH="60px" align="center" justify="space-between" gap={3}>
+          <HStack gap={2} cursor="pointer" onClick={() => navigate('/dashboard')}>
+            <Box w="7px" h="7px" borderRadius="2px" bg="var(--accent)" />
+            <Text color="var(--text-primary)" fontSize="md" fontWeight={800} letterSpacing="-0.04em">
               Dolistify
             </Text>
           </HStack>
@@ -288,17 +238,16 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
           <HStack gap={2} flexShrink={0}>
             <ThemeToggle compact />
             <Button
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-              onClick={() => setIsMobileMenuOpen((current) => !current)}
+              aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+              onClick={() => setIsMobileMenuOpen((c) => !c)}
               variant="ghost"
-              h="42px"
-              minW="42px"
+              h="38px"
+              minW="38px"
               px={0}
-              rounded="xl"
+              rounded="lg"
               borderWidth="1px"
               borderColor="var(--border)"
-              color="var(--text-secondary)"
-              bg="var(--surface)"
+              color="var(--text-primary)"
             >
               {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </Button>
@@ -306,93 +255,75 @@ export function DashboardHeader({ active }: DashboardHeaderProps) {
         </Flex>
       </Container>
 
+      {/* Mobile drawer */}
       {isMobileMenuOpen && (
         <Box display={{ base: 'block', lg: 'none' }} position="fixed" inset={0} zIndex={40}>
-          <Box position="absolute" inset={0} bg="rgba(15, 23, 42, 0.38)" onClick={() => setIsMobileMenuOpen(false)} />
+          <Box position="absolute" inset={0} bg="rgba(0,0,0,0.3)" onClick={() => setIsMobileMenuOpen(false)} />
           <Box
             position="absolute"
             top={0}
             right={0}
             h="100dvh"
-            w={{ base: '86%', sm: '22rem' }}
+            w={{ base: '82%', sm: '20rem' }}
             bg="var(--surface)"
             borderLeftWidth="1px"
             borderColor="var(--border)"
-            boxShadow="0 24px 60px rgba(15, 23, 42, 0.22)"
-            px={4}
+            boxShadow="var(--card-shadow)"
+            px={5}
             py={5}
           >
-            <Flex align="center" justify="space-between" gap={3} mb={6}>
-              <HStack gap={3}>
-                <Box color="var(--accent)">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
-                    <path d="M21 12a9 9 0 0 0-15.5-6.36" />
-                    <path d="M3 4v5h5" />
-                    <path d="M3 12a9 9 0 0 0 15.5 6.36" />
-                    <path d="M21 20v-5h-5" />
-                  </svg>
-                </Box>
-                <Text color="var(--text-secondary)" fontSize="lg" fontWeight="800">
-                  Menu
+            <Flex align="center" justify="space-between" mb={6}>
+              <HStack gap={2}>
+                <Box w="7px" h="7px" borderRadius="2px" bg="var(--accent)" />
+                <Text color="var(--text-primary)" fontSize="md" fontWeight={800} letterSpacing="-0.04em">
+                  Dolistify
                 </Text>
               </HStack>
-
               <Button
-                aria-label="Close menu"
+                aria-label="Fechar menu"
                 onClick={() => setIsMobileMenuOpen(false)}
-                variant="ghost"
-                h="40px"
-                minW="40px"
-                px={0}
-                rounded="xl"
-                color="var(--text-secondary)"
+                variant="ghost" h="38px" minW="38px" px={0} rounded="lg"
+                color="var(--muted-text)"
               >
                 <CloseIcon />
               </Button>
             </Flex>
 
-            <Stack gap={2}>
+            <Stack gap={1}>
               {navItems.map((item) => (
-                <NavButton
-                  key={item.key}
-                  label={item.label}
-                  icon={item.icon}
-                  isActive={item.isActive}
-                  onClick={item.onClick}
-                  fullWidth
-                />
+                <NavButton key={item.key} {...item} fullWidth />
               ))}
             </Stack>
 
             <Box mt={6} pt={5} borderTopWidth="1px" borderColor="var(--border)">
-              <Text color="var(--soft-text)" fontSize="xs" textTransform="uppercase" letterSpacing="0.18em" mb={3}>
-                Preferences
+              <Text color="var(--soft-text)" fontSize="xs" fontWeight={600} textTransform="uppercase" letterSpacing="0.12em" mb={3}>
+                Preferências
               </Text>
               <ThemeToggle compact />
             </Box>
 
-            <Button
-              onClick={handleLogout}
-              loading={isLoggingOut}
-              variant="ghost"
-              h="46px"
-              px={4}
-              mt={6}
-              w="full"
-              justifyContent="flex-start"
-              rounded="xl"
-              fontWeight="600"
-              fontSize="sm"
-              color="var(--danger-text)"
-              bg="var(--danger-bg)"
-              borderWidth="1px"
-              borderColor="var(--danger-border)"
-            >
-              <HStack gap={2}>
+            <Box mt={4}>
+              <Button
+                onClick={handleLogout}
+                loading={isLoggingOut}
+                variant="ghost"
+                h="44px"
+                px={4}
+                w="full"
+                justifyContent="flex-start"
+                gap={2}
+                rounded="lg"
+                fontWeight={600}
+                fontSize="sm"
+                color="var(--danger-text)"
+                bg="var(--danger-bg)"
+                borderWidth="1px"
+                borderColor="var(--danger-border)"
+              >
                 <LogoutIcon />
-                <Text>Logout</Text>
-              </HStack>
-            </Button>
+                <Text>Sair da conta</Text>
+              </Button>
+            </Box>
           </Box>
         </Box>
       )}

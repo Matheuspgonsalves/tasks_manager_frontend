@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, HStack, Input, Separator, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, HStack, Input, Separator, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { Category } from '../../types/category'
 
@@ -10,14 +10,11 @@ type CategoriesListProps = {
   onUpdateCategory: (categoryId: string, name: string) => Promise<void>
 }
 
-type EditState = {
-  categoryId: string
-  name: string
-}
+type EditState = { categoryId: string; name: string }
 
 function EditIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z" />
     </svg>
@@ -26,12 +23,19 @@ function EditIcon() {
 
 function DeleteIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 6h18" />
       <path d="M8 6V4h8v2" />
       <path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v6" />
-      <path d="M14 11v6" />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
     </svg>
   )
 }
@@ -47,53 +51,70 @@ export function CategoriesList({
 
   async function saveEdit() {
     if (!editing) return
-
-    const trimmedName = editing.name.trim()
-    if (!trimmedName) {
-      return
-    }
-
-    await onUpdateCategory(editing.categoryId, trimmedName)
+    const trimmed = editing.name.trim()
+    if (!trimmed) return
+    await onUpdateCategory(editing.categoryId, trimmed)
     setEditing(null)
   }
 
   return (
-    <Box bg="var(--surface)" borderRadius="2xl" borderWidth="1px" borderColor="var(--border)" boxShadow="var(--card-shadow)" overflow="hidden">
+    <Box
+      bg="var(--surface)"
+      borderRadius="10px"
+      borderWidth="1px"
+      borderColor="var(--border)"
+      boxShadow="var(--card-shadow)"
+      overflow="hidden"
+    >
+      {/* Header */}
       <Flex
         px={{ base: 4, md: 5 }}
         py={4}
         borderBottomWidth="1px"
         borderColor="var(--border)"
         justify="space-between"
-        align={{ base: 'flex-start', md: 'center' }}
+        align={{ base: 'flex-start', sm: 'center' }}
         gap={3}
-        direction={{ base: 'column', md: 'row' }}
+        direction={{ base: 'column', sm: 'row' }}
       >
         <Box>
-          <Text color="var(--text-secondary)" fontWeight="700" fontSize={{ base: 'md', md: 'lg' }}>
-            Your categories
+          <Text color="var(--text-primary)" fontWeight={800} fontSize="md" letterSpacing="-0.03em">
+            Categorias
           </Text>
-          <Text mt={1} color="var(--muted-text)" fontSize="sm">
-            Manage system defaults and your own custom categories in one place.
+          <Text mt={0.5} color="var(--muted-text)" fontSize="sm">
+            Gerencie categorias padrão e personalizadas.
           </Text>
         </Box>
 
-        <Button colorPalette="blue" onClick={onAddCategory}>
-          Add category
+        <Button
+          h="38px"
+          px={4}
+          rounded="lg"
+          fontWeight={700}
+          fontSize="sm"
+          gap={2}
+          bg="var(--accent)"
+          color="white"
+          _hover={{ bg: 'var(--accent-strong)' }}
+          onClick={onAddCategory}
+          flexShrink={0}
+        >
+          <PlusIcon />
+          Nova categoria
         </Button>
       </Flex>
 
       {categories.length === 0 ? (
-        <Box p={8}>
-          <Text color="var(--muted-text)" textAlign="center">
-            No categories found for this user yet.
-          </Text>
+        <Box p={10} textAlign="center">
+          <Text color="var(--soft-text)" fontSize="2xl" mb={2}>—</Text>
+          <Text color="var(--muted-text)" fontSize="sm">Nenhuma categoria encontrada ainda.</Text>
         </Box>
       ) : (
         <Box>
+          {/* Table header */}
           <Box
             display={{ base: 'none', md: 'grid' }}
-            gridTemplateColumns="minmax(220px, 1.4fr) minmax(120px, 0.8fr) minmax(220px, 1.8fr) 88px"
+            gridTemplateColumns="minmax(200px, 1.4fr) minmax(110px, 0.7fr) minmax(200px, 1.8fr) 80px"
             gap={4}
             px={5}
             py={3}
@@ -101,10 +122,19 @@ export function CategoriesList({
             borderColor="var(--border)"
             bg="var(--surface-muted)"
           >
-            <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Name</Text>
-            <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Type</Text>
-            <Text fontSize="sm" fontWeight="700" color="var(--muted-text)">Details</Text>
-            <Text fontSize="sm" fontWeight="700" color="var(--muted-text)" textAlign="right">Actions</Text>
+            {['Nome', 'Tipo', 'Detalhes', 'Ações'].map((col, i) => (
+              <Text
+                key={col}
+                fontSize="0.7rem"
+                fontWeight={700}
+                color="var(--soft-text)"
+                textTransform="uppercase"
+                letterSpacing="0.08em"
+                textAlign={i === 3 ? 'right' : 'left'}
+              >
+                {col}
+              </Text>
+            ))}
           </Box>
 
           <Stack separator={<Separator borderColor="var(--border)" />} p={{ base: 4, md: 0 }} gap={{ base: 4, md: 0 }}>
@@ -115,20 +145,50 @@ export function CategoriesList({
               return (
                 <Box key={category.id} px={{ base: 0, md: 5 }} py={{ base: 0, md: 4 }}>
                   {isEditing ? (
-                    <Stack gap={3}>
+                    <Stack gap={2.5}>
                       <Input
                         value={editing.name}
-                        onChange={(event) => setEditing((current) => (current ? { ...current, name: event.target.value } : null))}
+                        onChange={(e) => setEditing((s) => (s ? { ...s, name: e.target.value } : null))}
+                        h="40px"
+                        rounded="lg"
+                        fontSize="sm"
+                        fontWeight={500}
                         bg="var(--surface)"
                         borderColor="var(--border-strong)"
-                        color="var(--text-secondary)"
+                        color="var(--text-primary)"
+                        _focusVisible={{ borderColor: 'var(--accent)', boxShadow: '0 0 0 2px var(--accent-soft)' }}
+                        autoFocus
                       />
-                      <HStack justify="flex-end">
-                        <Button size="sm" variant="ghost" color="var(--muted-text)" onClick={() => setEditing(null)}>
-                          Cancel
+                      <HStack justify="flex-end" gap={2}>
+                        <Button
+                          size="sm"
+                          h="34px"
+                          px={3}
+                          rounded="lg"
+                          variant="ghost"
+                          fontWeight={600}
+                          fontSize="sm"
+                          color="var(--muted-text)"
+                          _hover={{ bg: 'var(--surface-hover)', color: 'var(--text-primary)' }}
+                          onClick={() => setEditing(null)}
+                        >
+                          Cancelar
                         </Button>
-                        <Button size="sm" colorPalette="blue" onClick={() => void saveEdit()} loading={isBusy} disabled={!editing.name.trim()}>
-                          Save
+                        <Button
+                          size="sm"
+                          h="34px"
+                          px={4}
+                          rounded="lg"
+                          fontWeight={700}
+                          fontSize="sm"
+                          bg="var(--accent)"
+                          color="white"
+                          _hover={{ bg: 'var(--accent-strong)' }}
+                          onClick={() => void saveEdit()}
+                          loading={isBusy}
+                          disabled={!editing.name.trim()}
+                        >
+                          Salvar
                         </Button>
                       </HStack>
                     </Stack>
@@ -136,59 +196,80 @@ export function CategoriesList({
                     <Box
                       display={{ base: 'flex', md: 'grid' }}
                       flexDirection="column"
-                      gridTemplateColumns="minmax(220px, 1.4fr) minmax(120px, 0.8fr) minmax(220px, 1.8fr) 88px"
-                      gap={{ base: 3, md: 4 }}
+                      gridTemplateColumns="minmax(200px, 1.4fr) minmax(110px, 0.7fr) minmax(200px, 1.8fr) 80px"
+                      gap={{ base: 2.5, md: 4 }}
                       alignItems={{ base: 'stretch', md: 'center' }}
                     >
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Name
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Nome
                         </Text>
-                        <Text fontSize={{ base: 'md', md: 'md' }} fontWeight="700" color="var(--text-secondary)">
+                        <Text fontSize="sm" fontWeight={700} color="var(--text-primary)">
                           {category.name}
                         </Text>
                       </Box>
 
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Type
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Tipo
                         </Text>
-                        <Badge colorPalette={category.isDefault ? 'purple' : 'blue'} fontSize="0.8rem" px={3} py={1} borderRadius="full">
-                          {category.isDefault ? 'Default' : 'Custom'}
-                        </Badge>
+                        <Box
+                          display="inline-flex"
+                          alignItems="center"
+                          px={2.5}
+                          py={1}
+                          borderRadius="5px"
+                          bg={category.isDefault ? 'var(--accent-soft)' : 'var(--surface-muted)'}
+                          borderWidth="1px"
+                          borderColor={category.isDefault ? 'var(--accent-border)' : 'var(--border)'}
+                        >
+                          <Text
+                            fontSize="0.7rem"
+                            fontWeight={600}
+                            color={category.isDefault ? 'var(--accent)' : 'var(--muted-text)'}
+                            letterSpacing="0.03em"
+                          >
+                            {category.isDefault ? 'Padrão' : 'Personalizada'}
+                          </Text>
+                        </Box>
                       </Box>
 
-                      <Box minW="0">
-                        <Text display={{ base: 'block', md: 'none' }} mb={1} fontSize="xs" textTransform="uppercase" letterSpacing="0.08em" color="var(--soft-text)">
-                          Details
+                      <Box minW={0}>
+                        <Text display={{ base: 'block', md: 'none' }} mb={0.5} fontSize="0.65rem" textTransform="uppercase" letterSpacing="0.1em" color="var(--soft-text)" fontWeight={600}>
+                          Detalhes
                         </Text>
-                        <Text color="var(--muted-text)" fontSize="sm">
-                          {category.isDefault ? 'Available for all users by default' : 'Created in your account'}
+                        <Text color="var(--muted-text)" fontSize="sm" fontWeight={400}>
+                          {category.isDefault ? 'Disponível para todos os usuários' : 'Criada na sua conta'}
                         </Text>
                       </Box>
 
-                      <HStack gap={1} justify="flex-end">
+                      <HStack gap={0.5} justify="flex-end">
                         {!category.isDefault && (
                           <Button
                             size="sm"
                             variant="ghost"
                             color="var(--muted-text)"
-                            minW="2.5rem"
+                            minW="32px"
+                            h="32px"
                             px={0}
-                            aria-label={`Edit ${category.name}`}
+                            rounded="md"
+                            aria-label={`Editar ${category.name}`}
+                            _hover={{ bg: 'var(--surface-active)', color: 'var(--accent)' }}
                             onClick={() => setEditing({ categoryId: category.id, name: category.name })}
                           >
                             <EditIcon />
                           </Button>
                         )}
-
                         <Button
                           size="sm"
                           variant="ghost"
-                          color="var(--danger-text)"
-                          minW="2.5rem"
+                          color="var(--muted-text)"
+                          minW="32px"
+                          h="32px"
                           px={0}
-                          aria-label={`${category.isDefault ? 'Hide' : 'Delete'} ${category.name}`}
+                          rounded="md"
+                          aria-label={`${category.isDefault ? 'Ocultar' : 'Excluir'} ${category.name}`}
+                          _hover={{ bg: 'var(--danger-bg)', color: 'var(--danger-text)' }}
                           onClick={() => void onDeleteCategory(category.id)}
                           loading={isBusy}
                         >
@@ -204,12 +285,23 @@ export function CategoriesList({
         </Box>
       )}
 
-      <Flex borderTopWidth="1px" borderColor="var(--border)" px={{ base: 4, md: 5 }} py={4} justify="space-between" align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={3}>
-        <Text color="var(--soft-text)" fontSize="sm">
-          {categories.length} {categories.length === 1 ? 'category' : 'categories'}
+      {/* Footer */}
+      <Flex
+        borderTopWidth="1px"
+        borderColor="var(--border)"
+        px={{ base: 4, md: 5 }}
+        py={3}
+        justify="space-between"
+        align="center"
+        gap={3}
+        wrap="wrap"
+        bg="var(--surface-muted)"
+      >
+        <Text color="var(--soft-text)" fontSize="xs" fontWeight={500}>
+          {categories.length} {categories.length === 1 ? 'categoria' : 'categorias'}
         </Text>
-        <Text color="var(--soft-text)" fontSize="sm">
-          Default categories can be hidden, custom categories can be edited or deleted.
+        <Text color="var(--soft-text)" fontSize="xs" fontWeight={400}>
+          Padrão: ocultar · Personalizadas: editar ou excluir
         </Text>
       </Flex>
     </Box>
